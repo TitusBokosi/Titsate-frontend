@@ -1,33 +1,58 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { MoreHorizontal, Shield, UserX, UserCheck, ShieldCheck } from "lucide-react"
-import type { AdminUser } from "../api/admin"
-import { useUserActions } from "../hooks/useAdmin"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import {
+  MoreHorizontal,
+  Shield,
+  UserX,
+  UserCheck,
+  ShieldCheck,
+} from 'lucide-react';
+import type { AdminUser } from '../api/admin';
+import { useUserActions } from '../hooks/useAdmin';
 
 interface UserManagementTableProps {
-  users: AdminUser[]
+  users: AdminUser[];
 }
 
 export function UserManagementTable({ users }: UserManagementTableProps) {
-  const { updateRole, suspend, unsuspend, isLoading } = useUserActions()
+  const { updateRole, suspend, unsuspend, isLoading } = useUserActions();
 
   const getRoleBadge = (role: string) => {
     switch (role) {
-      case 'ADMIN': return <Badge variant="destructive" className="flex items-center gap-1"><ShieldCheck className="size-3" /> ADMIN</Badge>
-      case 'SUPER_CREATOR': return <Badge className="bg-purple-600 flex items-center gap-1"><Shield className="size-3" /> SUPER CREATOR</Badge>
-      case 'CREATOR': return <Badge variant="secondary">CREATOR</Badge>
-      default: return <Badge variant="outline">STUDENT</Badge>
+      case 'ADMIN':
+        return (
+          <Badge variant="destructive" className="flex items-center gap-1">
+            <ShieldCheck className="size-3" /> ADMIN
+          </Badge>
+        );
+      case 'SUPER_CREATOR':
+        return (
+          <Badge className="bg-purple-600 flex items-center gap-1">
+            <Shield className="size-3" /> SUPER CREATOR
+          </Badge>
+        );
+      case 'CREATOR':
+        return <Badge variant="secondary">CREATOR</Badge>;
+      default:
+        return <Badge variant="outline">STUDENT</Badge>;
     }
-  }
+  };
 
   return (
     <div className="rounded-md border bg-card">
@@ -53,29 +78,55 @@ export function UserManagementTable({ users }: UserManagementTableProps) {
                 {user.isSuspended ? (
                   <Badge variant="destructive">SUSPENDED</Badge>
                 ) : (
-                  <Badge variant="default" className="bg-green-600">ACTIVE</Badge>
+                  <Badge variant="default" className="bg-green-600">
+                    ACTIVE
+                  </Badge>
                 )}
               </TableCell>
               <TableCell className="text-right">
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0" disabled={isLoading}>
+                  <DropdownMenuTrigger>
+                    <Button
+                      variant="ghost"
+                      className="h-8 w-8 p-0"
+                      disabled={isLoading}
+                    >
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-[200px]">
+                  <DropdownMenuContent className="w-[200px]">
                     <DropdownMenuLabel>Manage User</DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    
-                    <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">Change Role</DropdownMenuLabel>
-                    <DropdownMenuItem onClick={() => updateRole({ userId: user.id, role: 'STUDENT' })}>Set as Student</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => updateRole({ userId: user.id, role: 'CREATOR' })}>Set as Creator</DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => updateRole({ userId: user.id, role: 'SUPER_CREATOR' })}>Set as Super Creator</DropdownMenuItem>
-                    
+
+                    <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
+                      Change Role
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        updateRole({ userId: user.id, role: 'STUDENT' })
+                      }
+                    >
+                      Set as Student
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        updateRole({ userId: user.id, role: 'CREATOR' })
+                      }
+                    >
+                      Set as Creator
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        updateRole({ userId: user.id, role: 'SUPER_CREATOR' })
+                      }
+                    >
+                      Set as Super Creator
+                    </DropdownMenuItem>
+
                     <DropdownMenuSeparator />
-                    
+
                     {user.isSuspended ? (
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={() => unsuspend(user.id)}
                         className="text-green-600 focus:text-green-600"
                       >
@@ -83,7 +134,7 @@ export function UserManagementTable({ users }: UserManagementTableProps) {
                         Unsuspend User
                       </DropdownMenuItem>
                     ) : (
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         onClick={() => suspend(user.id)}
                         className="text-destructive focus:text-destructive"
                       >
@@ -99,5 +150,5 @@ export function UserManagementTable({ users }: UserManagementTableProps) {
         </TableBody>
       </Table>
     </div>
-  )
+  );
 }

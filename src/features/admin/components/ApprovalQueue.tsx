@@ -83,7 +83,12 @@ export function ApprovalQueue({ courses }: ApprovalQueueProps) {
               variant="destructive"
               size="sm"
               className="flex-1"
-              onClick={() => rejectCourse(course.id)}
+              onClick={() =>
+                rejectCourse({
+                  courseId: course.id,
+                  feedback: '',
+                })
+              }
               disabled={isProcessing}
             >
               <X className="size-4 mr-1" /> Reject

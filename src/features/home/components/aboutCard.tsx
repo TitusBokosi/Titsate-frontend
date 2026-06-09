@@ -8,9 +8,14 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
+type Props = {
+  title: string;
+  description: string;
+  icon: string;
+};
 
-export default function AboutCard ( {title, description, icon}){
-    return(
+export default function AboutCard({ title, description, icon }: Props) {
+  return (
     <Card className="relative mx-auto w-full max-w-sm pt-0 border-0">
       <div className="absolute inset-0  aspect-video text-center " />
       <img
@@ -20,11 +25,8 @@ export default function AboutCard ( {title, description, icon}){
       />
       <CardHeader>
         <CardTitle>{title}</CardTitle>
-        <CardDescription>
-          {description}
-        </CardDescription>
+        <CardDescription>{description}</CardDescription>
       </CardHeader>
-
     </Card>
-    )
+  );
 }
