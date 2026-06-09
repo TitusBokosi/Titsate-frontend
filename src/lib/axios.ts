@@ -40,8 +40,8 @@ api.interceptors.response.use(
     const originalRequest = error.config;
 
     if (
-      error.response?.status === 401 && 
-      !originalRequest._retry && 
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
       !originalRequest.url?.includes('/auth/login')
     ) {
       if (isRefreshing) {
@@ -72,7 +72,12 @@ api.interceptors.response.use(
       } catch (err) {
         processQueue(err);
         clearAuthSession();
-        // Optional: window.location.href = "/login"
+        // notify the app that auth/session is no longer valid so UI can react
+        try {
+          window.dispatchEvent(new Event('auth:logout'));
+        } catch (e) {
+          // ignore if window not available
+        }
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

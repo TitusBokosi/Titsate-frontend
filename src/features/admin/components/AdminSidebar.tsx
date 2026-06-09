@@ -1,15 +1,12 @@
-import { Link, useLocation } from "react-router-dom"
-import { 
-  Users, 
-  FileCheck, 
-  LayoutDashboard, 
-  Layers, 
-  Megaphone, 
+import { Link, useLocation } from 'react-router-dom';
+import {
+  Users,
+  LayoutDashboard,
+  Megaphone,
   MessageSquare,
-  Star,
-  Settings
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+  Settings,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const navGroups = [
   {
@@ -17,35 +14,32 @@ const navGroups = [
     items: [
       { name: 'Overview', href: '/admin', icon: LayoutDashboard },
       { name: 'User Management', href: '/admin/users', icon: Users },
-    ]
-  },
-  {
-    label: 'Content',
-    items: [
-      { name: 'Content Approvals', href: '/admin/approvals', icon: FileCheck },
-      { name: 'Categories', href: '/admin/categories', icon: Layers },
-      { name: 'Featured Content', href: '/admin/featured', icon: Star },
-    ]
+      { name: 'Profile', href: '/admin/profile', icon: Settings },
+    ],
   },
   {
     label: 'Communication',
     items: [
       { name: 'Announcements', href: '/admin/announcements', icon: Megaphone },
       { name: 'Feedback', href: '/admin/feedback', icon: MessageSquare },
-    ]
+    ],
   },
-]
+];
 
 export function AdminSidebar() {
-  const location = useLocation()
+  const location = useLocation();
 
   const isActive = (href: string) =>
-    href === '/admin' ? location.pathname === '/admin' : location.pathname.startsWith(href)
+    href === '/admin'
+      ? location.pathname === '/admin'
+      : location.pathname.startsWith(href);
 
   return (
-    <aside className="fixed left-0 top-16 bottom-0 w-64 bg-card border-r border-white/5 flex flex-col p-4 gap-2 z-40 hidden lg:flex overflow-y-auto">
+    <aside className="fixed left-0 top-16 bottom-0 w-64 bg-card border-r border-white/5 hidden lg:flex flex-col p-4 gap-2 z-40 overflow-y-auto">
       <div className="mb-2 px-2">
-         <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">Control Center</p>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">
+          Control Center
+        </p>
       </div>
 
       <nav className="flex-1 space-y-4">
@@ -56,25 +50,27 @@ export function AdminSidebar() {
             </p>
             <div className="space-y-0.5">
               {group.items.map((item) => {
-                const active = isActive(item.href)
+                const active = isActive(item.href);
                 return (
                   <Link
                     key={item.href}
                     to={item.href}
                     className={cn(
-                      "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all group",
-                      active 
-                        ? "bg-primary/10 text-primary" 
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all group',
+                      active
+                        ? 'bg-primary/10 text-primary'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground',
                     )}
                   >
-                    <item.icon className={cn(
-                      "size-4 transition-transform group-hover:scale-110",
-                      active ? "text-primary" : "text-muted-foreground"
-                    )} />
+                    <item.icon
+                      className={cn(
+                        'size-4 transition-transform group-hover:scale-110',
+                        active ? 'text-primary' : 'text-muted-foreground',
+                      )}
+                    />
                     {item.name}
                   </Link>
-                )
+                );
               })}
             </div>
           </div>
@@ -82,14 +78,14 @@ export function AdminSidebar() {
       </nav>
 
       <div className="border-t border-white/5 pt-4">
-         <Link
-            to="/"
-            className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-         >
-            <Settings className="size-4" />
-            Back to Site
-         </Link>
+        <Link
+          to="/"
+          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+        >
+          <Settings className="size-4" />
+          Back to Site
+        </Link>
       </div>
     </aside>
-  )
+  );
 }

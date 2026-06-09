@@ -1,311 +1,244 @@
-import { useParams, Link } from "react-router-dom"
-import { useQuery } from "@tanstack/react-query"
-import * as courseApi from "@/features/course/api/course"
-import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { 
-  ChevronLeft, 
-  Plus, 
-  BookOpen, 
-  FileText, 
-  Video, 
-  Trash, 
-  GripVertical,
-  Clock,
-  AlertCircle,
-  Send,
-  Edit2,
-  Check,
-  X,
-  Type
-} from "lucide-react"
-import { useContentManagementActions, useCreatorActions } from "../hooks/useCreator"
-import { useState } from "react"
-import { cn } from "@/lib/utils"
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import * as courseApi from '@/features/course/api/course';
+import {
+  useContentManagementActions,
+  useCreatorActions,
+} from '../hooks/useCreator';
+import { useState } from 'react';
+import ContentHeader from '../components/ContentHeader';
+import RejectionFeedback from '../components/RejectionFeedback';
+import Curriculum from '../components/Curriculum';
+import { TopicDialog } from '../components/TopicDialog';
+import LessonDialog from '../components/LessonDialog';
 
 export function ContentManagementPage() {
-  const { courseId } = useParams()
-  const { data: courseData, isLoading, refetch } = useQuery({
+  const { courseId } = useParams();
+  const {
+    data: courseData,
+    isLoading,
+    refetch,
+  } = useQuery({
     queryKey: ['courses', courseId],
-    queryFn: () => courseApi.getCourseById(courseId as string)
-  })
+    queryFn: () => courseApi.getCourseById(courseId as string),
+  });
 
-  const { 
-    createTopic, updateTopic, deleteTopic,
-    createLesson, updateLesson, deleteLesson 
-  } = useContentManagementActions(courseId as string)
-  const { updateCourse } = useCreatorActions()
+  const {
+    createTopic,
+    updateTopic,
+    deleteTopic,
+    createLesson,
+    updateLesson,
+    deleteLesson,
+  } = useContentManagementActions(courseId as string);
+  const { updateCourse } = useCreatorActions();
 
-  const [editingId, setEditingId] = useState<string | null>(null)
-  const [editValue, setEditValue] = useState("")
-  const [editContent, setEditContent] = useState("")
-  const [isEditingCourse, setIsEditingCourse] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
+  const [editPosition, setEditPosition] = useState('');
+  const [editContent, setEditContent] = useState('');
+  const [isEditingCourse, setIsEditingCourse] = useState(false);
+  const [isEditingDetails, setIsEditingDetails] = useState(false);
+  const [descriptionValue, setDescriptionValue] = useState('');
+  const [categoryValue, setCategoryValue] = useState<string | null>(null);
+  const [isTopicDialogOpen, setIsTopicDialogOpen] = useState(false);
+  const [isLessonDialogOpen, setIsLessonDialogOpen] = useState(false);
+  const [lessonTopicId, setLessonTopicId] = useState<string | null>(null);
 
-  const course = courseData?.data
+  const course = courseData?.data;
+
+  const handleOpenTopicDialog = () => {
+    setIsTopicDialogOpen(true);
+  };
+
+  const handleCreateTopic = async (topicName: string) => {
+    await createTopic({ topicName });
+    refetch();
+  };
+
+  const handleOpenLessonForm = (topicId: string) => {
+    setLessonTopicId(topicId);
+    setIsLessonDialogOpen(true);
+  };
+
+  const handleCreateLesson = async (topicId: string, data: any) => {
+    await createLesson({ topicId, data });
+    refetch();
+  };
 
   const handleSubmitForReview = async () => {
-    if (!course) return
-    await updateCourse({ id: course.id, data: { status: 'PENDING' } })
-    refetch()
-  }
+    if (!course) return;
+    await updateCourse({ id: course.id, data: { status: 'PENDING' } });
+    refetch();
+  };
 
   const handleUpdateCourseName = async () => {
-    if (!course) return
-    await updateCourse({ id: course.id, data: { courseName: editValue } })
-    setIsEditingCourse(false)
-    refetch()
-  }
+    if (!course) return;
+    await updateCourse({ id: course.id, data: { courseName: editValue } });
+    setIsEditingCourse(false);
+    refetch();
+  };
+
+  const handleUpdateCourseDetails = async () => {
+    if (!course) return;
+    const payload: any = {};
+    if (descriptionValue !== undefined) payload.description = descriptionValue;
+    if (categoryValue !== undefined) payload.categoryId = categoryValue;
+
+    await updateCourse({ id: course.id, data: payload });
+    setIsEditingDetails(false);
+    refetch();
+  };
 
   const handleUpdateTopic = async (topicId: string) => {
-    await updateTopic({ topicId, data: { topicName: editValue } })
-    setEditingId(null)
-    refetch()
-  }
+    if (!course) return;
 
-  const handleUpdateLesson = async (topicId: string, lessonId: string) => {
-    await updateLesson({ topicId, lessonId, data: { lessonName: editValue, content: editContent } })
-    setEditingId(null)
-    refetch()
-  }
+    const trimmedName = editValue.trim();
 
-  if (isLoading) return <div className="p-10 text-center">Loading content...</div>
+    // Build current topics list, sorted by position if available, else by array order
+    const topics = (course.topics || []).slice().map((t: any, i: number) => ({
+      ...t,
+      __origIndex: i,
+      position: typeof t.position === 'number' ? t.position : i + 1,
+    }));
+
+    const currentIndex = topics.findIndex((t: any) => t.id === topicId);
+    if (currentIndex === -1) return;
+
+    // Validate and parse requested position
+    let requestedPos: number | null = null;
+    if (editPosition.trim() !== '') {
+      const parsedPosition = Number(editPosition);
+      if (!Number.isNaN(parsedPosition)) {
+        // clamp to valid range 1..topics.length
+        requestedPos = Math.max(1, Math.min(parsedPosition, topics.length));
+      }
+    }
+
+    // If no name change and no position change, just reset UI
+    const isNameChange = !!trimmedName;
+    const isPositionChange =
+      requestedPos !== null && requestedPos !== currentIndex + 1;
+    if (!isNameChange && !isPositionChange) {
+      setEditingId(null);
+      setEditPosition('');
+      setEditValue('');
+      return;
+    }
+
+    // If only updating name, update single topic
+    if (!isPositionChange) {
+      const updateData: any = {};
+      if (isNameChange) updateData.topicName = trimmedName;
+      await updateTopic({ topicId, data: updateData });
+      setEditingId(null);
+      setEditPosition('');
+      setEditValue('');
+      refetch();
+      return;
+    }
+
+    // Position change: move the topic within the array by inserting at requestedPos (1-based)
+    const moved = topics.splice(currentIndex, 1)[0];
+    const insertIndex = (requestedPos as number) - 1;
+    topics.splice(insertIndex, 0, moved);
+
+    // Build list of updates for any topic whose position changes, plus name change for moved topic
+    const updates: Array<Promise<any>> = [];
+    for (let i = 0; i < topics.length; i++) {
+      const t = topics[i];
+      const newPos = i + 1;
+      const payload: any = {};
+      if (t.position !== newPos) payload.position = newPos;
+      if (t.id === topicId && isNameChange) payload.topicName = trimmedName;
+      if (Object.keys(payload).length > 0) {
+        updates.push(updateTopic({ topicId: t.id, data: payload }));
+      }
+    }
+
+    // Execute all updates
+    await Promise.all(updates);
+    setEditingId(null);
+    setEditPosition('');
+    setEditValue('');
+    refetch();
+  };
+
+  const handleInlineUpdateLesson = async (
+    topicId: string,
+    lessonId: string,
+  ) => {
+    await updateLesson({
+      topicId,
+      lessonId,
+      data: { lessonName: editValue, content: editContent },
+    });
+    setEditingId(null);
+    refetch();
+  };
+
+  if (isLoading)
+    return <div className="p-10 text-center">Loading content...</div>;
 
   return (
     <div className="container mx-auto py-10 px-6 space-y-8 animate-in fade-in duration-500">
-      <div className="flex items-center gap-4">
-        <Link to="/creator">
-          <Button variant="ghost" size="icon" className="rounded-full">
-            <ChevronLeft className="size-6" />
-          </Button>
-        </Link>
-        <div className="flex-1">
-          {isEditingCourse ? (
-            <div className="flex items-center gap-2">
-              <Input 
-                value={editValue} 
-                onChange={(e) => setEditValue(e.target.value)}
-                className="text-2xl font-bold h-12 max-w-md"
-              />
-              <Button size="icon" onClick={handleUpdateCourseName}><Check className="size-4" /></Button>
-              <Button size="icon" variant="ghost" onClick={() => setIsEditingCourse(false)}><X className="size-4" /></Button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3 group">
-              <h1 className="text-3xl font-bold">{course?.courseName}</h1>
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="opacity-0 group-hover:opacity-100 transition-opacity rounded-full h-8 w-8"
-                onClick={() => {
-                  setEditValue(course?.courseName || "")
-                  setIsEditingCourse(true)
-                }}
-              >
-                <Edit2 className="size-4" />
-              </Button>
-            </div>
-          )}
-          <div className="flex items-center gap-2 mt-1">
-            <Badge variant="outline" className="font-bold border-primary/20 text-primary">
-              {course?.category?.categoryName}
-            </Badge>
-            <Badge className={cn("font-bold border-none", 
-               course?.status === 'APPROVED' ? "bg-green-500/10 text-green-500" : 
-               course?.status === 'REJECTED' ? "bg-red-500/10 text-red-500" : "bg-yellow-500/10 text-yellow-500"
-            )}>
-              {course?.status}
-            </Badge>
-          </div>
-        </div>
-        <div className="ml-auto flex gap-3">
-          <Button 
-            className="font-bold rounded-full px-6 shadow-lg shadow-primary/20"
-            onClick={handleSubmitForReview}
-            disabled={course?.status === 'PENDING'}
-          >
-            <Send className="size-4 mr-2" />
-            {course?.status === 'REJECTED' ? 'Resubmit for Review' : 'Submit for Review'}
-          </Button>
-        </div>
-      </div>
+      <ContentHeader
+        course={course}
+        isEditingCourse={isEditingCourse}
+        editValue={editValue}
+        setEditValue={setEditValue}
+        setIsEditingCourse={setIsEditingCourse}
+        onUpdateCourseName={handleUpdateCourseName}
+        onSubmitForReview={handleSubmitForReview}
+        isEditingDetails={isEditingDetails}
+        setIsEditingDetails={setIsEditingDetails}
+        descriptionValue={descriptionValue}
+        setDescriptionValue={setDescriptionValue}
+        categoryValue={categoryValue}
+        setCategoryValue={setCategoryValue}
+        onUpdateCourseDetails={handleUpdateCourseDetails}
+      />
 
-      {course?.status === 'REJECTED' && course?.feedback && (
-        <Card className="border-red-500/20 bg-red-500/5 shadow-none overflow-hidden">
-          <CardHeader className="flex flex-row items-center gap-4 py-4">
-            <AlertCircle className="size-6 text-red-500" />
-            <div>
-              <CardTitle className="text-lg text-red-500">Rejection Feedback</CardTitle>
-              <CardDescription className="text-red-500/80">
-                Please address the following issues before resubmitting.
-              </CardDescription>
-            </div>
-          </CardHeader>
-          <CardContent className="pb-4">
-            <p className="p-4 rounded-xl bg-background/50 text-foreground/90 font-medium border border-red-500/10">
-              "{course.feedback}"
-            </p>
-          </CardContent>
-        </Card>
-      )}
+      <RejectionFeedback
+        feedback={course?.status === 'REJECTED' ? course?.feedback : undefined}
+      />
 
-      <div className="grid grid-cols-1 gap-6">
-        <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <BookOpen className="size-6 text-primary" />
-            Curriculum
-          </h2>
-          <Button variant="outline" size="sm" className="rounded-full" onClick={() => createTopic({ topicName: 'New Topic' })}>
-            <Plus className="size-4 mr-2" /> Add Topic
-          </Button>
-        </div>
+      <Curriculum
+        course={course}
+        editingId={editingId}
+        setEditingId={setEditingId}
+        editValue={editValue}
+        setEditValue={setEditValue}
+        editPosition={editPosition}
+        setEditPosition={setEditPosition}
+        editContent={editContent}
+        setEditContent={setEditContent}
+        onOpenTopicDialog={handleOpenTopicDialog}
+        onOpenLessonForm={handleOpenLessonForm}
+        deleteTopic={deleteTopic}
+        deleteLesson={deleteLesson}
+        updateTopic={handleUpdateTopic}
+        updateLesson={handleInlineUpdateLesson}
+      />
 
-        <div className="space-y-6">
-          {course?.topics?.map((topic: any, index: number) => (
-            <Card key={topic.id} className="border-none shadow-md ring-1 ring-white/5 bg-card/40 backdrop-blur-sm overflow-hidden">
-              <CardHeader className="p-4 flex flex-row items-center gap-4 border-b border-white/5">
-                <GripVertical className="size-5 text-muted-foreground/30" />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Topic {index + 1}</span>
-                  </div>
-                  {editingId === topic.id ? (
-                    <div className="flex items-center gap-2 mt-1">
-                      <Input 
-                        value={editValue} 
-                        onChange={(e) => setEditValue(e.target.value)}
-                        className="h-9 font-bold"
-                      />
-                      <Button size="sm" onClick={() => handleUpdateTopic(topic.id)}><Check className="size-3" /></Button>
-                      <Button size="sm" variant="ghost" onClick={() => setEditingId(null)}><X className="size-3" /></Button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2 group/topic">
-                      <CardTitle className="text-lg font-bold">{topic.topicName}</CardTitle>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="opacity-0 group-hover/topic:opacity-100 transition-opacity h-6 w-6 rounded-full"
-                        onClick={() => {
-                          setEditingId(topic.id)
-                          setEditValue(topic.topicName)
-                        }}
-                      >
-                        <Edit2 className="size-3" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="rounded-full opacity-50 hover:opacity-100"
-                    onClick={() => deleteTopic(topic.id)}
-                  >
-                    <Trash className="size-4 text-red-500" />
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="p-0">
-                <div className="divide-y divide-white/5">
-                  {topic.lessons?.map((lesson: any) => (
-                    <div key={lesson.id} className="flex flex-col border-b border-white/5 bg-black/5 last:border-0 hover:bg-white/5 transition-colors">
-                      <div className="p-4 flex items-center gap-4 group/lesson">
-                        <div className="size-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                          {lesson.lessonType === 'VIDEO' ? <Video className="size-5" /> : <FileText className="size-5" />}
-                        </div>
-                        <div className="flex-1">
-                          {editingId === lesson.id ? (
-                            <div className="flex items-center gap-2">
-                              <Input 
-                                value={editValue} 
-                                onChange={(e) => setEditValue(e.target.value)}
-                                className="h-8 text-sm font-bold"
-                              />
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-bold text-sm">{lesson.lessonName}</h4>
-                              <Button 
-                                variant="ghost" 
-                                size="icon" 
-                                className="opacity-0 group-hover/lesson:opacity-100 transition-opacity h-6 w-6 rounded-full"
-                                onClick={() => {
-                                  setEditingId(lesson.id)
-                                  setEditValue(lesson.lessonName)
-                                  setEditContent(lesson.content || "")
-                                }}
-                              >
-                                <Edit2 className="size-3" />
-                              </Button>
-                            </div>
-                          )}
-                          <p className="text-xs text-muted-foreground mt-0.5">{lesson.lessonType}</p>
-                        </div>
-                        <div className="flex gap-1">
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="rounded-full opacity-50 hover:opacity-100"
-                            onClick={() => deleteLesson({ topicId: topic.id, lessonId: lesson.id })}
-                          >
-                            <Trash className="size-4 text-red-500" />
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      {editingId === lesson.id && (
-                        <div className="px-14 pb-4 space-y-4 animate-in slide-in-from-top-2 duration-300">
-                          <div className="space-y-2">
-                            <Label className="text-xs text-muted-foreground flex items-center gap-1">
-                              <Type className="size-3" /> Lesson Content (Markdown/Text)
-                            </Label>
-                            <Textarea 
-                              value={editContent}
-                              onChange={(e) => setEditContent(e.target.value)}
-                              placeholder="Write your lesson content here..."
-                              className="min-h-[200px] text-sm bg-background/50 border-white/10"
-                            />
-                          </div>
-                          <div className="flex justify-end gap-2">
-                            <Button variant="ghost" size="sm" onClick={() => setEditingId(null)}>Cancel</Button>
-                            <Button size="sm" onClick={() => handleUpdateLesson(topic.id, lesson.id)}>Save Changes</Button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                  <div className="p-4">
-                    <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        className="w-full border-dashed border border-primary/20 text-primary/70 hover:text-primary hover:bg-primary/5 rounded-xl py-6"
-                        onClick={() => createLesson({ topicId: topic.id, data: { lessonName: 'New Lesson', lessonType: 'TEXT' } })}
-                    >
-                      <Plus className="size-4 mr-2" /> Add Lesson to this Topic
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      <TopicDialog
+        open={isTopicDialogOpen}
+        onOpenChange={setIsTopicDialogOpen}
+        onCreate={handleCreateTopic}
+      />
 
-          {(!course?.topics || course.topics.length === 0) && (
-            <div className="text-center py-20 bg-muted/20 border-2 border-dashed rounded-3xl">
-              <Clock className="size-12 text-muted-foreground/30 mx-auto mb-4" />
-              <h3 className="text-xl font-bold">Your curriculum is empty</h3>
-              <p className="text-muted-foreground mt-2">Start by adding a topic to organize your lessons.</p>
-              <Button className="mt-6 rounded-full px-8" onClick={() => createTopic({ topicName: 'Getting Started' })}>
-                <Plus className="size-4 mr-2" /> Add Your First Topic
-              </Button>
-            </div>
-          )}
-        </div>
-      </div>
+      <LessonDialog
+        open={isLessonDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) setLessonTopicId(null);
+          setIsLessonDialogOpen(open);
+        }}
+        initial={undefined}
+        onSave={async (data) => {
+          if (!lessonTopicId) return;
+          await handleCreateLesson(lessonTopicId, data);
+        }}
+      />
     </div>
-  )
+  );
 }

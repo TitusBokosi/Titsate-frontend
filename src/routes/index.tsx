@@ -1,5 +1,5 @@
 // src/routes/index.tsx
-import { createBrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import HomePage from '@/features/home';
 import { CoursesPage } from '@/features/course/pages/coursesPage';
@@ -10,21 +10,23 @@ import { SignIn } from '@/features/auth/pages/signIn';
 import { SignUp } from '@/features/auth/pages/signUp';
 import { GuestRoute } from './GuestRoute';
 import { UserDashboard } from '@/features/users';
-import { 
-  AdminLayout, 
-  DashboardOverview, 
-  UserManagementPage, 
+import {
+  AdminLayout,
+  DashboardOverview,
+  UserManagementPage,
+  AdminProfilePage,
   ContentApprovalsPage,
   CategoryManagementPage,
   AnnouncementsPage,
   FeaturedContentPage,
-  CoursePreviewPage
+  CoursePreviewPage,
 } from '@/features/admin';
-import { 
+import {
   CreatorDashboardPage,
-  ContentManagementPage
+  CreatorContentPage,
+  CreatorProfilePage,
+  ContentManagementPage,
 } from '@/features/creator';
-
 import MainLayout from '@/layouts/MainLayout';
 import AuthLayout from '@/layouts/AuthLayout';
 import { CreatorLayout } from '@/layouts/CreatorLayout';
@@ -32,8 +34,16 @@ import { CreatorLayout } from '@/layouts/CreatorLayout';
 const LoginPage = () => <SignIn />;
 const SignupPage = () => <SignUp />;
 
-const UnauthorizedPage = () => <div className="flex items-center justify-center min-h-screen text-2xl">Unauthorized Access</div>;
-const NotFoundPage = () => <div className="flex items-center justify-center min-h-screen text-2xl">404 Not Found</div>;
+const UnauthorizedPage = () => (
+  <div className="flex items-center justify-center min-h-screen text-2xl">
+    Unauthorized Access
+  </div>
+);
+const NotFoundPage = () => (
+  <div className="flex items-center justify-center min-h-screen text-2xl">
+    404 Not Found
+  </div>
+);
 
 export const router = createBrowserRouter([
   {
@@ -65,7 +75,11 @@ export const router = createBrowserRouter([
       },
       // Protected User Routes
       {
-        element: <ProtectedRoute allowedRoles={['STUDENT', 'CREATOR', 'SUPER_CREATOR', 'ADMIN']} />,
+        element: (
+          <ProtectedRoute
+            allowedRoles={['STUDENT', 'CREATOR', 'SUPER_CREATOR', 'ADMIN']}
+          />
+        ),
         children: [
           {
             path: '/dashboard/:userId',
@@ -75,7 +89,7 @@ export const router = createBrowserRouter([
       },
       // Protected Admin Routes
       {
-        element: <ProtectedRoute allowedRoles={['ADMIN', 'SUPER_CREATOR']} />,
+        element: <ProtectedRoute allowedRoles={['ADMIN']} />,
         children: [
           {
             element: <AdminLayout />,
@@ -83,26 +97,53 @@ export const router = createBrowserRouter([
             children: [
               { index: true, element: <DashboardOverview /> },
               { path: 'users', element: <UserManagementPage /> },
-              { path: 'approvals', element: <ContentApprovalsPage /> },
-              { path: 'approvals/:courseId', element: <CoursePreviewPage /> },
-              { path: 'categories', element: <CategoryManagementPage /> },
+              { path: 'profile', element: <AdminProfilePage /> },
               { path: 'announcements', element: <AnnouncementsPage /> },
-              { path: 'featured', element: <FeaturedContentPage /> },
-            ]
+            ],
           },
         ],
       },
       // Protected Creator Routes
       {
-        element: <ProtectedRoute allowedRoles={['CREATOR', 'SUPER_CREATOR', 'ADMIN']} />,
+        element: <ProtectedRoute allowedRoles={['CREATOR', 'SUPER_CREATOR']} />,
         children: [
           {
             element: <CreatorLayout />,
             path: '/creator',
             children: [
-              { index: true, element: <CreatorDashboardPage /> },
-              { path: 'manage/:courseId', element: <ContentManagementPage /> },
-            ]
+              {
+                element: <CreatorDashboardPage />,
+                children: [
+                  {
+                    index: true,
+                    element: <Navigate to="/creator/content" replace />,
+                  },
+                  { path: 'content', element: <CreatorContentPage /> },
+                  { path: 'profile', element: <CreatorProfilePage /> },
+                  {
+                    path: 'manage/:courseId',
+                    element: <ContentManagementPage />,
+                  },
+                  {
+                    element: (
+                      <ProtectedRoute allowedRoles={['SUPER_CREATOR']} />
+                    ),
+                    children: [
+                      { path: 'approvals', element: <ContentApprovalsPage /> },
+                      {
+                        path: 'approvals/:courseId',
+                        element: <CoursePreviewPage />,
+                      },
+                      {
+                        path: 'categories',
+                        element: <CategoryManagementPage />,
+                      },
+                      { path: 'featured', element: <FeaturedContentPage /> },
+                    ],
+                  },
+                ],
+              },
+            ],
           },
         ],
       },
