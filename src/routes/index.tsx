@@ -11,7 +11,6 @@ import { SignUp } from '@/features/auth/pages/signUp';
 import { GuestRoute } from './GuestRoute';
 import { UserDashboard } from '@/features/users';
 import {
-  AdminLayout,
   DashboardOverview,
   UserManagementPage,
   AdminProfilePage,
@@ -22,14 +21,13 @@ import {
   CoursePreviewPage,
 } from '@/features/admin';
 import {
-  CreatorDashboardPage,
   CreatorContentPage,
   CreatorProfilePage,
   ContentManagementPage,
 } from '@/features/creator';
 import MainLayout from '@/layouts/MainLayout';
 import AuthLayout from '@/layouts/AuthLayout';
-import { CreatorLayout } from '@/layouts/CreatorLayout';
+import { DashboardLayout } from '@/layouts/DashboardLayout';
 
 const LoginPage = () => <SignIn />;
 const SignupPage = () => <SignUp />;
@@ -73,26 +71,27 @@ export const router = createBrowserRouter([
         path: '/unauthorized',
         element: <UnauthorizedPage />,
       },
-      // Protected User Routes
+      // Unified Dashboard Routes
       {
-        element: (
-          <ProtectedRoute
-            allowedRoles={['STUDENT', 'CREATOR', 'SUPER_CREATOR', 'ADMIN']}
-          />
-        ),
+        element: <DashboardLayout />,
         children: [
+          // Protected User Routes
           {
-            path: '/dashboard/:userId',
-            element: <UserDashboard />,
+            element: (
+              <ProtectedRoute
+                allowedRoles={['STUDENT', 'CREATOR', 'SUPER_CREATOR', 'ADMIN']}
+              />
+            ),
+            children: [
+              {
+                path: '/dashboard/:userId',
+                element: <UserDashboard />,
+              },
+            ],
           },
-        ],
-      },
-      // Protected Admin Routes
-      {
-        element: <ProtectedRoute allowedRoles={['ADMIN']} />,
-        children: [
+          // Protected Admin Routes
           {
-            element: <AdminLayout />,
+            element: <ProtectedRoute allowedRoles={['ADMIN']} />,
             path: '/admin',
             children: [
               { index: true, element: <DashboardOverview /> },
@@ -101,46 +100,36 @@ export const router = createBrowserRouter([
               { path: 'announcements', element: <AnnouncementsPage /> },
             ],
           },
-        ],
-      },
-      // Protected Creator Routes
-      {
-        element: <ProtectedRoute allowedRoles={['CREATOR', 'SUPER_CREATOR']} />,
-        children: [
+          // Protected Creator Routes
           {
-            element: <CreatorLayout />,
+            element: (
+              <ProtectedRoute allowedRoles={['CREATOR', 'SUPER_CREATOR']} />
+            ),
             path: '/creator',
             children: [
               {
-                element: <CreatorDashboardPage />,
+                index: true,
+                element: <Navigate to="/creator/content" replace />,
+              },
+              { path: 'content', element: <CreatorContentPage /> },
+              { path: 'profile', element: <CreatorProfilePage /> },
+              {
+                path: 'manage/:courseId',
+                element: <ContentManagementPage />,
+              },
+              {
+                element: <ProtectedRoute allowedRoles={['SUPER_CREATOR']} />,
                 children: [
+                  { path: 'approvals', element: <ContentApprovalsPage /> },
                   {
-                    index: true,
-                    element: <Navigate to="/creator/content" replace />,
-                  },
-                  { path: 'content', element: <CreatorContentPage /> },
-                  { path: 'profile', element: <CreatorProfilePage /> },
-                  {
-                    path: 'manage/:courseId',
-                    element: <ContentManagementPage />,
+                    path: 'approvals/:courseId',
+                    element: <CoursePreviewPage />,
                   },
                   {
-                    element: (
-                      <ProtectedRoute allowedRoles={['SUPER_CREATOR']} />
-                    ),
-                    children: [
-                      { path: 'approvals', element: <ContentApprovalsPage /> },
-                      {
-                        path: 'approvals/:courseId',
-                        element: <CoursePreviewPage />,
-                      },
-                      {
-                        path: 'categories',
-                        element: <CategoryManagementPage />,
-                      },
-                      { path: 'featured', element: <FeaturedContentPage /> },
-                    ],
+                    path: 'categories',
+                    element: <CategoryManagementPage />,
                   },
+                  { path: 'featured', element: <FeaturedContentPage /> },
                 ],
               },
             ],

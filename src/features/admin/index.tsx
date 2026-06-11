@@ -1,4 +1,3 @@
-export * from './layouts/AdminLayout';
 export * from './pages/DashboardOverview';
 export * from './pages/UserManagementPage';
 export * from './pages/AdminProfilePage';

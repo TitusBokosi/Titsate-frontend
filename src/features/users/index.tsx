@@ -20,9 +20,8 @@ export function UserDashboard() {
   } = useUserById(userId!)
 
 
- return (
-      <div className="min-h-screen bg-background pt-20 md:pt-24 pb-12">
-        <div className="container max-w-6xl mx-auto px-4 sm:px-6">
+  return (
+    <div className="pb-12">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-24">
               <Loader2 className="size-12 text-primary animate-spin mb-4" />
@@ -62,8 +61,7 @@ export function UserDashboard() {
                 </Tabs>
               )}
             </div>
-          )}
-        </div>
-      </div>
- )
+        )}
+    </div>
+  );
 }
