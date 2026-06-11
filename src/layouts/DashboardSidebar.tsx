@@ -31,7 +31,7 @@ type NavGroup = {
   items: NavItem[];
 };
 
-export function DashboardSidebar() {
+export function DashboardSidebar({ mobileOpen, setMobileOpen }: { mobileOpen?: boolean; setMobileOpen?: (open: boolean) => void }) {
   const { user, logout } = useAuthContext();
   const navigate = useNavigate();
   const role = user?.role;
@@ -39,9 +39,11 @@ export function DashboardSidebar() {
   const handleLogout = async () => {
     await logout();
     navigate('/login');
+    setMobileOpen?.(false);
   };
 
   const getNavGroups = (): NavGroup[] => {
+    // ... same logic as before ...
     const groups: NavGroup[] = [];
 
     if (role === 'ADMIN') {
@@ -75,7 +77,6 @@ export function DashboardSidebar() {
     }
 
     if (role === 'STUDENT' || role === 'CREATOR' || role === 'SUPER_CREATOR' || role === 'ADMIN') {
-        // Everyone has a student dashboard essentially
         groups.push({
             label: 'Learning',
             items: [
@@ -91,93 +92,108 @@ export function DashboardSidebar() {
   const navGroups = getNavGroups();
 
   return (
-    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-card border-r border-white/5 hidden lg:flex flex-col z-40 overflow-y-auto">
-      {/* Sidebar Header */}
-      <div className="p-6 border-b border-white/5 space-y-4">
-        <Link 
-            to="/" 
-            className="flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors group px-1"
-        >
-          <ArrowLeft className="size-3 group-hover:-translate-x-1 transition-transform" />
-          Back to Website
-        </Link>
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-            <UserIcon className="size-5" />
-          </div>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold truncate">
-              {user?.firstname} {user?.lastname}
-            </p>
-            <p className="text-xs text-muted-foreground truncate">
-              {user?.role?.toLowerCase().replace('_', ' ')}
-            </p>
-          </div>
-        </div>
-      </div>
+    <>
+      {/* Mobile Overlay */}
+      {mobileOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
+          onClick={() => setMobileOpen?.(false)}
+        />
+      )}
 
-      <nav className="flex-1 p-4 space-y-6">
-        {navGroups.map((group) => (
-          <div key={group.label}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 px-3 mb-2">
-              {group.label}
-            </p>
-            <div className="space-y-0.5">
-              {group.items.map((item) => (
-                <NavLink
-                  key={item.href}
-                  to={item.href}
-                  end={item.end}
-                  className={({ isActive }) =>
-                    cn(
-                      'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all group',
-                      isActive
-                        ? 'bg-primary/10 text-primary'
-                        : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-                    )
-                  }
-                >
-                  {({ isActive }) => (
-                    <>
-                      <item.icon
-                        className={cn(
-                          'size-4 transition-transform group-hover:scale-110',
-                          isActive ? 'text-primary' : 'text-muted-foreground',
-                        )}
-                      />
-                      {item.name}
-                    </>
-                  )}
-                </NavLink>
-              ))}
+      <aside className={cn(
+        "fixed left-0 top-0 bottom-0 w-64 bg-card border-r border-white/5 flex flex-col z-50 overflow-y-auto transition-transform duration-300 transform lg:translate-x-0",
+        mobileOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        {/* Sidebar Header */}
+        <div className="p-6 border-b border-white/5 space-y-4">
+          <Link 
+              to="/" 
+              className="flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors group px-1"
+          >
+            <ArrowLeft className="size-3 group-hover:-translate-x-1 transition-transform" />
+            Back to Website
+          </Link>
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <UserIcon className="size-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-semibold truncate">
+                {user?.firstname} {user?.lastname}
+              </p>
+              <p className="text-xs text-muted-foreground truncate">
+                {user?.role?.toLowerCase().replace('_', ' ')}
+              </p>
             </div>
           </div>
-        ))}
-      </nav>
+        </div>
 
-      <div className="p-4 border-t border-white/5 space-y-1">
-        <NavLink
-          to="/profile"
-          className={({ isActive }) =>
-            cn(
-              'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all group',
-              isActive
-                ? 'bg-primary/10 text-primary'
-                : 'text-muted-foreground hover:bg-muted hover:text-foreground',
-            )
-          }
-        >
-          <Settings className="size-4" />
-          Profile Settings
-        </NavLink>
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all group"
-        >
-          <LogOut className="size-4" />
-          Logout
-        </button>
-      </div>
-    </aside>
+        <nav className="flex-1 p-4 space-y-6">
+          {navGroups.map((group) => (
+            <div key={group.label}>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 px-3 mb-2">
+                {group.label}
+              </p>
+              <div className="space-y-0.5">
+                {group.items.map((item) => (
+                  <NavLink
+                    key={item.href}
+                    to={item.href}
+                    end={item.end}
+                    onClick={() => setMobileOpen?.(false)}
+                    className={({ isActive }) =>
+                      cn(
+                        'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all group',
+                        isActive
+                          ? 'bg-primary/10 text-primary'
+                          : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+                      )
+                    }
+                  >
+                    {({ isActive }) => (
+                      <>
+                        <item.icon
+                          className={cn(
+                            'size-4 transition-transform group-hover:scale-110',
+                            isActive ? 'text-primary' : 'text-muted-foreground',
+                          )}
+                        />
+                        {item.name}
+                      </>
+                    )}
+                  </NavLink>
+                ))}
+              </div>
+            </div>
+          ))}
+        </nav>
+
+        <div className="p-4 border-t border-white/5 space-y-1">
+          <NavLink
+            to="/profile"
+            onClick={() => setMobileOpen?.(false)}
+            className={({ isActive }) =>
+              cn(
+                'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all group',
+                isActive
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+              )
+            }
+          >
+            <Settings className="size-4" />
+            Profile Settings
+          </NavLink>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all group"
+          >
+            <LogOut className="size-4" />
+            Logout
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
