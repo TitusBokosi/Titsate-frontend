@@ -24,18 +24,18 @@ export default function HeroSection() {
           <div className="relative py-36">
             <div className="relative z-10 mx-auto w-full max-w-5xl px-6">
               <div className="md:w-1/2">
-                <div>
+                <div className="animate-in fade-in slide-in-from-left-8 duration-700">
                   <h1 className="max-w-md text-balance text-5xl font-medium md:text-6xl">
                     Kickstart your tech journey
                   </h1>
-                  <p className="text-muted-foreground my-8 max-w-2xl text-balance text-xl">
+                  <p className="text-muted-foreground my-8 max-w-2xl text-balance text-xl animate-in fade-in slide-in-from-left-4 duration-700 delay-150">
                     Stop Watching.{' '}
                     <span className="text-[#d9450f]">Start Building</span>.
                     Titsate helps you turn knowledge into real skills with
                     hands-on learning that gets you hired.
                   </p>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
                     <Link to={user ? (role === 'ADMIN' ? '/admin' : role?.includes('CREATOR') ? '/creator' : `/dashboard/${user.id}/learning`) : '/signup'}>
                       <Button size="lg" className="pr-4.5" nativeButton={false}>
                         <span className="text-nowrap">
@@ -47,18 +47,13 @@ export default function HeroSection() {
                   </div>
                 </div>
 
-                <div className="mt-10">
+                <div className="mt-10 animate-in fade-in duration-1000 delay-500">
                   <p className="text-muted-foreground">Trusted by teams at :</p>
-                  {/*<div className="**:fill-foreground mt-6 flex items-center gap-8">
-                    <VercelFull height={20} width={76} />
-                    <Spotify height={22} width={73} />
-                    <SupabaseFull className="h-[22px]" />
-                  </div>*/}
                 </div>
               </div>
             </div>
 
-            <div className="perspective-near mt-24 translate-x-12 md:absolute md:-right-6 md:bottom-16 md:left-1/2 md:top-40 md:mt-0 md:translate-x-0">
+            <div className="perspective-near mt-24 translate-x-12 md:absolute md:-right-6 md:bottom-16 md:left-1/2 md:top-40 md:mt-0 md:translate-x-0 animate-in fade-in zoom-in-95 duration-1000 delay-300">
               <div className="before:border-foreground/5 before:bg-foreground/5 relative h-full before:absolute before:-inset-x-4 before:bottom-7 before:top-0 before:skew-x-6 before:rounded-[calc(var(--radius)+1rem)] before:border">
                 <div className="bg-background rounded-(--radius) shadow-foreground/10 ring-foreground/5 relative h-full -translate-y-12 skew-x-6 overflow-hidden border border-transparent shadow-md ring-1">
                   <img

@@ -12,9 +12,9 @@ export default function AboutUsPage() {
         <section className="relative py-20 overflow-hidden bg-white">
           <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-3xl mx-auto text-center space-y-6">
-              <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight text-foreground">
+              <h2 className="  text-5xl md:text-10xl font-extrabold tracking-tight text-foreground">
                 Empowering the next generation of <span className="text-primary italic">Tech Leaders</span>
-              </h1>
+              </h2>
               <p className="text-xl text-muted-foreground leading-relaxed">
                 Titsate is more than just an e-learning platform. We're a community-driven ecosystem designed to bridge the gap between theoretical knowledge and real-world expertise.
               </p>
@@ -25,25 +25,32 @@ export default function AboutUsPage() {
         {/* Vision & Mission */}
         <section className="py-20 bg-primary/5">
           <div className="container mx-auto px-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-              <div className="space-y-6">
-                <div className="inline-flex p-3 rounded-2xl bg-primary/10 text-primary">
-                  <Target className="size-6" />
-                </div>
-                <h2 className="text-3xl font-bold">Our Vision</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  To become the world's most accessible and effective platform for hands-on technical education, where anyone, anywhere, can master the skills needed to build the future.
-                </p>
-              </div>
-              <div className="space-y-6">
-                <div className="inline-flex p-3 rounded-2xl bg-primary/10 text-primary">
-                  <Zap className="size-6" />
-                </div>
-                <h2 className="text-3xl font-bold">Our Mission</h2>
-                <p className="text-lg text-muted-foreground leading-relaxed">
-                  We empower learners by providing high-quality, practical content mentored by industry experts. We focus on "Learning by Doing" to ensure our students are job-ready from day one.
-                </p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+              {/* Vision Card */}
+              <Card className="border-none bg-white shadow-xl rounded-md overflow-hidden">
+                <CardContent className="p-10 space-y-6">
+                  <div className="inline-flex p-3 rounded-md bg-primary/10 text-primary">
+                    <Target className="size-6" />
+                  </div>
+                  <h2 className="text-3xl font-bold">Our Vision</h2>
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    To become the world's most accessible and effective platform for hands-on technical education, where anyone, anywhere, can master the skills needed to build the future.
+                  </p>
+                </CardContent>
+              </Card>
+
+              {/* Mission Card */}
+              <Card className="border-none bg-white shadow-xl rounded-md overflow-hidden">
+                <CardContent className="p-10 space-y-6">
+                  <div className="inline-flex p-3 rounded-md bg-primary/10 text-primary">
+                    <Zap className="size-6" />
+                  </div>
+                  <h2 className="text-3xl font-bold">Our Mission</h2>
+                  <p className="text-lg text-muted-foreground leading-relaxed">
+                    We empower learners by providing high-quality, practical content mentored by industry experts. We focus on "Learning by Doing" to ensure our students are job-ready from day one.
+                  </p>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </section>

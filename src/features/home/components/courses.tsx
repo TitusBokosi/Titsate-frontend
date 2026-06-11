@@ -28,12 +28,12 @@ export default function Courses() {
 
   return (
     <div className="mx-5 md:mx-10 lg:mx-40 py-24 border-b">
-      <div className="flex flex-col gap-2 mb-12 text-center">
-        <h2 className="text-3xl font-bold tracking-tight md:text-4xl">Featured Courses</h2>
+      <div className="flex flex-col gap-2 mb-12 text-center animate-in fade-in slide-in-from-bottom-8 duration-700">
+        <h2 className="text-3xl font-bold tracking-tight md:text-4xl text-foreground">Featured Courses</h2>
         <p className="text-muted-foreground">Start your learning journey with our top-rated content.</p>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
         {coursesData?.data?.map((course: any) => {
           const isEnrolled = isAuthenticated && enrollments.some((e: any) => e.courseid === course.id);
           const courseLessons = course.topics?.flatMap((t: any) => t.lessons) || [];

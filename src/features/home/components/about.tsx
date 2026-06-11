@@ -19,9 +19,9 @@ export default function HowItWorks() {
     },
 ]
     return(
-        <div className="about-section  md:mx-10 lg:mx-40 py-20 flex flex-col gap-5 border-b-2 mx-5">
-            <h2 className="text-center">How it works</h2>
-          <div className="about-cards  flex gap-5 md:flex-row flex-col">
+        <div className="about-section  md:mx-10 lg:mx-40 py-24 flex flex-col gap-12 border-b-2 mx-5">
+            <h2 className="text-center text-3xl font-bold tracking-tight md:text-4xl animate-in fade-in slide-in-from-bottom-8 duration-700">How It Works</h2>
+          <div className="about-cards flex gap-8 md:flex-row flex-col animate-in fade-in slide-in-from-bottom-12 duration-1000 delay-200">
               {data.map((item, index) => (
                 <AboutCard key={index} title={item.title} description={item.description} icon={item.icon} />
             ))} </div>
