@@ -24,6 +24,8 @@ type Props = {
   onUpdateCourseDetails?: () => Promise<void>;
 };
 
+import { useAuthContext } from '@/providers/AuthProvider';
+
 export function ContentHeader({
   course,
   isEditingCourse,
@@ -41,6 +43,9 @@ export function ContentHeader({
   onUpdateCourseDetails,
 }: Props) {
   const { data: categoriesData } = useCategories();
+  const { user } = useAuthContext();
+  const isSuperCreator = user?.role === 'SUPER_CREATOR';
+
   return (
     <div className="flex items-center gap-4">
       <Link to="/creator">
@@ -150,32 +155,36 @@ export function ContentHeader({
           >
             {course?.category?.categoryName}
           </Badge>
-          <Badge
-            className={cn(
-              'font-bold border-none',
-              course?.status === 'APPROVED'
-                ? 'bg-green-500/10 text-green-500'
-                : course?.status === 'REJECTED'
-                  ? 'bg-red-500/10 text-red-500'
-                  : 'bg-yellow-500/10 text-yellow-500',
-            )}
-          >
-            {course?.status}
-          </Badge>
+          {!isSuperCreator && (
+            <Badge
+              className={cn(
+                'font-bold border-none',
+                course?.status === 'APPROVED'
+                  ? 'bg-green-500/10 text-green-500'
+                  : course?.status === 'REJECTED'
+                    ? 'bg-red-500/10 text-red-500'
+                    : 'bg-yellow-500/10 text-yellow-500',
+              )}
+            >
+              {course?.status}
+            </Badge>
+          )}
         </div>
       </div>
-      <div className="ml-auto flex gap-3">
-        <Button
-          className="font-bold rounded-full px-6 shadow-lg shadow-primary/20"
-          onClick={onSubmitForReview}
-          disabled={course?.status === 'PENDING'}
-        >
-          <Send className="size-4 mr-2" />
-          {course?.status === 'REJECTED'
-            ? 'Resubmit for Review'
-            : 'Submit for Review'}
-        </Button>
-      </div>
+      {!isSuperCreator && (
+        <div className="ml-auto flex gap-3">
+          <Button
+            className="font-bold rounded-full px-6 shadow-lg shadow-primary/20"
+            onClick={onSubmitForReview}
+            disabled={course?.status === 'PENDING'}
+          >
+            <Send className="size-4 mr-2" />
+            {course?.status === 'REJECTED'
+              ? 'Resubmit for Review'
+              : 'Submit for Review'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

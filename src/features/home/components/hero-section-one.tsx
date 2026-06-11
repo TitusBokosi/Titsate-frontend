@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import { Button } from '@/components/ui/button';
 import { HeroHeader } from '../../../components/header';
@@ -9,7 +10,12 @@ import hero from '../../../assets/hero.jpeg';
 import { Spotify } from '@/components/ui/svgs/spotify';
 import { SupabaseFull } from '@/components/ui/svgs/supabase';*/
 
+import { useAuthContext } from '@/providers/AuthProvider';
+
 export default function HeroSection() {
+  const { user } = useAuthContext();
+  const role = user?.role;
+
   return (
     <>
       <HeroHeader />
@@ -30,20 +36,14 @@ export default function HeroSection() {
                   </p>
 
                   <div className="flex items-center gap-3">
-                    <Button size="lg" className="pr-4.5" nativeButton={false}>
-                      <span className="text-nowrap">Get Started</span>
-                      <ChevronRight className="opacity-50" />
-                    </Button>
-                    <Button
-                      key={2}
-                      size="lg"
-                      variant="outline"
-                      className="pl-5"
-                      nativeButton={false}
-                    >
-                      <CirclePlay className="fill-primary/25 stroke-primary" />
-                      <span className="text-nowrap">Watch video</span>
-                    </Button>
+                    <Link to={user ? (role === 'ADMIN' ? '/admin' : role?.includes('CREATOR') ? '/creator' : `/dashboard/${user.id}/learning`) : '/signup'}>
+                      <Button size="lg" className="pr-4.5" nativeButton={false}>
+                        <span className="text-nowrap">
+                          {user ? 'Go to Dashboard' : 'Get Started'}
+                        </span>
+                        <ChevronRight className="opacity-50" />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
 

@@ -9,7 +9,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 const menuItems = [
   { name: 'Home', href: '/' },
   { name: 'Courses', href: '/courses' },
-  { name: 'Pricing', href: '#pricing' },
+  { name: 'About Us', href: '/about' },
 ];
 
 export const HeroHeader = () => {

@@ -9,11 +9,10 @@ import { LessonDetailPage } from '@/features/lesson/pages/LessonDetailPage';
 import { SignIn } from '@/features/auth/pages/signIn';
 import { SignUp } from '@/features/auth/pages/signUp';
 import { GuestRoute } from './GuestRoute';
-import { UserDashboard } from '@/features/users';
+import { UserDashboard, SharedProfilePage } from '@/features/users';
 import {
   DashboardOverview,
   UserManagementPage,
-  AdminProfilePage,
   ContentApprovalsPage,
   CategoryManagementPage,
   AnnouncementsPage,
@@ -22,12 +21,12 @@ import {
 } from '@/features/admin';
 import {
   CreatorContentPage,
-  CreatorProfilePage,
   ContentManagementPage,
 } from '@/features/creator';
 import MainLayout from '@/layouts/MainLayout';
 import AuthLayout from '@/layouts/AuthLayout';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
+import AboutUsPage from '@/features/home/pages/AboutUsPage';
 
 const LoginPage = () => <SignIn />;
 const SignupPage = () => <SignUp />;
@@ -43,6 +42,7 @@ const NotFoundPage = () => (
   </div>
 );
 
+
 export const router = createBrowserRouter([
   {
     element: <MainLayout />,
@@ -50,6 +50,10 @@ export const router = createBrowserRouter([
       {
         path: '/',
         element: <HomePage />,
+      },
+      {
+        path: '/about',
+        element: <AboutUsPage />,
       },
       {
         path: '/courses',
@@ -71,71 +75,81 @@ export const router = createBrowserRouter([
         path: '/unauthorized',
         element: <UnauthorizedPage />,
       },
-      // Unified Dashboard Routes
+    ],
+  },
+  // Unified Dashboard Routes
+  {
+    element: <DashboardLayout />,
+    children: [
+      // Shared Profile Route
       {
-        element: <DashboardLayout />,
+        element: (
+          <ProtectedRoute
+            allowedRoles={['STUDENT', 'CREATOR', 'SUPER_CREATOR', 'ADMIN']}
+          />
+        ),
+        children: [{ path: '/profile', element: <SharedProfilePage /> }],
+      },
+      // Protected User Routes
+      {
+        element: (
+          <ProtectedRoute
+            allowedRoles={['STUDENT', 'CREATOR', 'SUPER_CREATOR', 'ADMIN']}
+          />
+        ),
+        path: '/dashboard/:userId',
         children: [
-          // Protected User Routes
+          { index: true, element: <Navigate to="learning" replace /> },
+          { path: 'learning', element: <UserDashboard /> },
+          { path: 'progress', element: <UserDashboard /> },
+        ],
+      },
+      // Protected Admin Routes
+      {
+        element: <ProtectedRoute allowedRoles={['ADMIN']} />,
+        path: '/admin',
+        children: [
+          { index: true, element: <DashboardOverview /> },
+          { path: 'users', element: <UserManagementPage /> },
+          { path: 'announcements', element: <AnnouncementsPage /> },
+        ],
+      },
+      // Protected Creator Routes
+      {
+        element: <ProtectedRoute allowedRoles={['CREATOR', 'SUPER_CREATOR']} />,
+        path: '/creator',
+        children: [
           {
-            element: (
-              <ProtectedRoute
-                allowedRoles={['STUDENT', 'CREATOR', 'SUPER_CREATOR', 'ADMIN']}
-              />
-            ),
-            children: [
-              {
-                path: '/dashboard/:userId',
-                element: <UserDashboard />,
-              },
-            ],
+            index: true,
+            element: <Navigate to="/creator/content" replace />,
           },
-          // Protected Admin Routes
+          { path: 'content', element: <CreatorContentPage /> },
           {
-            element: <ProtectedRoute allowedRoles={['ADMIN']} />,
-            path: '/admin',
-            children: [
-              { index: true, element: <DashboardOverview /> },
-              { path: 'users', element: <UserManagementPage /> },
-              { path: 'profile', element: <AdminProfilePage /> },
-              { path: 'announcements', element: <AnnouncementsPage /> },
-            ],
+            path: 'manage/:courseId',
+            element: <ContentManagementPage />,
           },
-          // Protected Creator Routes
           {
-            element: (
-              <ProtectedRoute allowedRoles={['CREATOR', 'SUPER_CREATOR']} />
-            ),
-            path: '/creator',
+            element: <ProtectedRoute allowedRoles={['SUPER_CREATOR']} />,
             children: [
+              { path: 'approvals', element: <ContentApprovalsPage /> },
               {
-                index: true,
-                element: <Navigate to="/creator/content" replace />,
-              },
-              { path: 'content', element: <CreatorContentPage /> },
-              { path: 'profile', element: <CreatorProfilePage /> },
-              {
-                path: 'manage/:courseId',
-                element: <ContentManagementPage />,
+                path: 'approvals/:courseId',
+                element: <CoursePreviewPage />,
               },
               {
-                element: <ProtectedRoute allowedRoles={['SUPER_CREATOR']} />,
-                children: [
-                  { path: 'approvals', element: <ContentApprovalsPage /> },
-                  {
-                    path: 'approvals/:courseId',
-                    element: <CoursePreviewPage />,
-                  },
-                  {
-                    path: 'categories',
-                    element: <CategoryManagementPage />,
-                  },
-                  { path: 'featured', element: <FeaturedContentPage /> },
-                ],
+                path: 'categories',
+                element: <CategoryManagementPage />,
               },
+              { path: 'featured', element: <FeaturedContentPage /> },
             ],
           },
         ],
       },
+    ],
+  },
+  {
+    element: <MainLayout />, // Catch-all or other standalone pages if needed, but usually MainLayout wraps the main app
+    children: [
       {
         path: '*',
         element: <NotFoundPage />,

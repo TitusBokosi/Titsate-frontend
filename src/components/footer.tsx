@@ -3,114 +3,32 @@ import { Link } from 'react-router-dom'
 
 const links = [
     {
-        group: 'Product',
+        group: 'Platform',
         items: [
             {
-                title: 'Features',
-                to: '#',
+                title: 'Home',
+                to: '/',
             },
             {
-                title: 'Solution',
-                to: '#',
+                title: 'Courses',
+                to: '/courses',
             },
             {
-                title: 'Customers',
-                to: '#',
-            },
-            {
-                title: 'Pricing',
-                to: '#',
-            },
-            {
-                title: 'Help',
-                to: '#',
-            },
-            {
-                title: 'About',
-                to: '#',
+                title: 'About Us',
+                to: '/about',
             },
         ],
     },
     {
-        group: 'Solution',
+        group: 'Account',
         items: [
             {
-                title: 'Startup',
-                to: '#',
+                title: 'Sign In',
+                to: '/login',
             },
             {
-                title: 'Freelancers',
-                to: '#',
-            },
-            {
-                title: 'Organizations',
-                to: '#',
-            },
-            {
-                title: 'Students',
-                to: '#',
-            },
-            {
-                title: 'Collaboration',
-                to: '#',
-            },
-            {
-                title: 'Design',
-                to: '#',
-            },
-            {
-                title: 'Management',
-                to: '#',
-            },
-        ],
-    },
-    {
-        group: 'Company',
-        items: [
-            {
-                title: 'About',
-                to: '#',
-            },
-            {
-                title: 'Careers',
-                to: '#',
-            },
-            {
-                title: 'Blog',
-                to: '#',
-            },
-            {
-                title: 'Press',
-                to: '#',
-            },
-            {
-                title: 'Contact',
-                to: '#',
-            },
-            {
-                title: 'Help',
-                to: '#',
-            },
-        ],
-    },
-    {
-        group: 'Legal',
-        items: [
-            {
-                title: 'Licence',
-                to: '#',
-            },
-            {
-                title: 'Privacy',
-                to: '#',
-            },
-            {
-                title: 'Cookies',
-                to: '#',
-            },
-            {
-                title: 'Security',
-                to: '#',
+                title: 'Register',
+                to: '/signup',
             },
         ],
     },
@@ -149,7 +67,7 @@ export default function FooterSection() {
                     </div>
                 </div>
                 <div className="mt-12 flex flex-wrap items-end justify-between gap-6 border-t py-6">
-                    <span className="text-muted-foreground order-last block text-center text-sm md:order-first">© {2026} Tailark, All rights reserved</span>
+                    <span className="text-muted-foreground order-last block text-center text-sm md:order-first">© {2026} Titsate, All rights reserved</span>
                     <div className="order-first flex flex-wrap justify-center gap-6 text-sm md:order-last">
                         <Link
                             to="#"

@@ -10,22 +10,19 @@ type DashboardHeaderProps = {
     role?: string
   }
   isSettingsActive?: boolean
-  onToggleSettings?: () => void
 }
 
 export function DashboardHeader({
   user,
   isSettingsActive,
-  onToggleSettings,
 }: DashboardHeaderProps) {
   return (
     <div className="w-full">
       <Card 
         className={cn(
-          "border-none shadow-sm overflow-hidden transition-all duration-300 cursor-pointer group hover:ring-2 hover:ring-primary/20",
+          "border-none shadow-sm overflow-hidden transition-all duration-300 group hover:ring-2 hover:ring-primary/20",
           isSettingsActive ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20" : "bg-primary/5"
         )}
-        onClick={onToggleSettings}
       >
         <CardHeader className="p-5 md:p-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate, Link } from 'react-router-dom';
 import {
   Users,
   LayoutDashboard,
@@ -10,9 +10,14 @@ import {
   Star,
   CheckCircle,
   FolderKanban,
+  LogOut,
+  User as UserIcon,
+  Home,
+  ArrowLeft,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthContext } from '@/providers/AuthProvider';
+import { Button } from '@/components/ui/button';
 
 type NavItem = {
   name: string;
@@ -27,8 +32,14 @@ type NavGroup = {
 };
 
 export function DashboardSidebar() {
-  const { user } = useAuthContext();
+  const { user, logout } = useAuthContext();
+  const navigate = useNavigate();
   const role = user?.role;
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login');
+  };
 
   const getNavGroups = (): NavGroup[] => {
     const groups: NavGroup[] = [];
@@ -40,7 +51,6 @@ export function DashboardSidebar() {
           { name: 'Overview', href: '/admin', icon: LayoutDashboard, end: true },
           { name: 'User Management', href: '/admin/users', icon: Users },
           { name: 'Announcements', href: '/admin/announcements', icon: Megaphone },
-          { name: 'Profile', href: '/admin/profile', icon: Settings },
         ],
       });
     }
@@ -48,7 +58,6 @@ export function DashboardSidebar() {
     if (role === 'CREATOR' || role === 'SUPER_CREATOR') {
       const creatorItems: NavItem[] = [
         { name: 'Content Management', href: '/creator', icon: FolderKanban, end: true },
-        { name: 'Profile Management', href: '/creator/profile', icon: Settings },
       ];
 
       if (role === 'SUPER_CREATOR') {
@@ -68,10 +77,10 @@ export function DashboardSidebar() {
     if (role === 'STUDENT' || role === 'CREATOR' || role === 'SUPER_CREATOR' || role === 'ADMIN') {
         // Everyone has a student dashboard essentially
         groups.push({
-            label: 'Student',
+            label: 'Learning',
             items: [
-                { name: 'My Learning', href: `/dashboard/${user?.id}`, icon: BookOpen },
-                { name: 'Browse Courses', href: '/courses', icon: GraduationCap },
+                { name: 'My Learning', href: `/dashboard/${user?.id}/learning`, icon: BookOpen },
+                { name: 'Progress', href: `/dashboard/${user?.id}/progress`, icon: GraduationCap },
             ]
         });
     }
@@ -82,17 +91,35 @@ export function DashboardSidebar() {
   const navGroups = getNavGroups();
 
   return (
-    <aside className="fixed left-0 top-16 bottom-0 w-64 bg-card border-r border-white/5 hidden lg:flex flex-col p-4 gap-2 z-40 overflow-y-auto">
-      <div className="mb-2 px-2">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">
-          Dashboard
-        </p>
+    <aside className="fixed left-0 top-0 bottom-0 w-64 bg-card border-r border-white/5 hidden lg:flex flex-col z-40 overflow-y-auto">
+      {/* Sidebar Header */}
+      <div className="p-6 border-b border-white/5 space-y-4">
+        <Link 
+            to="/" 
+            className="flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-primary transition-colors group px-1"
+        >
+          <ArrowLeft className="size-3 group-hover:-translate-x-1 transition-transform" />
+          Back to Website
+        </Link>
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <UserIcon className="size-5" />
+          </div>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold truncate">
+              {user?.firstname} {user?.lastname}
+            </p>
+            <p className="text-xs text-muted-foreground truncate">
+              {user?.role?.toLowerCase().replace('_', ' ')}
+            </p>
+          </div>
+        </div>
       </div>
 
-      <nav className="flex-1 space-y-4">
+      <nav className="flex-1 p-4 space-y-6">
         {navGroups.map((group) => (
           <div key={group.label}>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 px-3 mb-1">
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/40 px-3 mb-2">
               {group.label}
             </p>
             <div className="space-y-0.5">
@@ -128,14 +155,28 @@ export function DashboardSidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-white/5 pt-4">
+      <div className="p-4 border-t border-white/5 space-y-1">
         <NavLink
-          to="/"
-          className="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+          to="/profile"
+          className={({ isActive }) =>
+            cn(
+              'flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all group',
+              isActive
+                ? 'bg-primary/10 text-primary'
+                : 'text-muted-foreground hover:bg-muted hover:text-foreground',
+            )
+          }
         >
-          <LayoutDashboard className="size-4" />
-          Back to Home
+          <Settings className="size-4" />
+          Profile Settings
         </NavLink>
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-all group"
+        >
+          <LogOut className="size-4" />
+          Logout
+        </button>
       </div>
     </aside>
   );
