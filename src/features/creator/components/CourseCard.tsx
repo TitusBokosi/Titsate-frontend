@@ -30,6 +30,8 @@ function getStatusColor(status: string) {
   }
 }
 
+import { useAuthContext } from '@/providers/AuthProvider';
+
 export function CourseCard({
   course,
   onDelete,
@@ -37,6 +39,9 @@ export function CourseCard({
   course: Course;
   onDelete: (id: string) => void;
 }) {
+  const { user } = useAuthContext();
+  const isSuperCreator = user?.role === 'SUPER_CREATOR';
+
   return (
     <Card className="group overflow-hidden rounded-2xl border-none shadow-xl ring-1 ring-white/10 bg-card/60 backdrop-blur-xl hover:translate-y-[-4px] transition-all duration-300">
       <div className="aspect-video relative overflow-hidden">
@@ -48,16 +53,18 @@ export function CourseCard({
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           alt={course.courseName}
         />
-        <div className="absolute top-4 left-4">
-          <Badge
-            className={cn(
-              'font-bold border-none shadow-sm',
-              getStatusColor(course.status),
-            )}
-          >
-            {course.status}
-          </Badge>
-        </div>
+        {!isSuperCreator && (
+          <div className="absolute top-4 left-4">
+            <Badge
+              className={cn(
+                'font-bold border-none shadow-sm',
+                getStatusColor(course.status),
+              )}
+            >
+              {course.status}
+            </Badge>
+          </div>
+        )}
       </div>
       <CardHeader className="p-6">
         <div className="flex justify-between items-start">

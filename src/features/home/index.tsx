@@ -1,4 +1,5 @@
 import HeroSection from '@/features/home/components/hero-section-one';
+import MissionVision from './components/MissionVision';
 import Courses from './components/courses';
 import HowItWorks from './components/about';
 
@@ -7,6 +8,7 @@ const HomePage = () => {
     <div>
       <HeroSection></HeroSection>
       <Courses></Courses>
+      <MissionVision />
       <HowItWorks></HowItWorks>
     </div>
   );

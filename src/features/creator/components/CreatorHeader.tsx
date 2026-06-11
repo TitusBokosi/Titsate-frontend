@@ -11,8 +11,12 @@ type Props = {
   isProcessing?: boolean;
 };
 
+import { useAuthContext } from '@/providers/AuthProvider';
+
 export function CreatorHeader({ onCreate, isProcessing }: Props) {
   const [showModal, setShowModal] = React.useState(false);
+  const { user } = useAuthContext();
+  const isSuperCreator = user?.role === 'SUPER_CREATOR';
 
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
@@ -21,7 +25,9 @@ export function CreatorHeader({ onCreate, isProcessing }: Props) {
           Creator Dashboard
         </h1>
         <p className="text-muted-foreground mt-2 text-lg">
-          Manage your courses and track their approval status.
+          {isSuperCreator 
+            ? 'Manage your courses and curriculum directly.' 
+            : 'Manage your courses and track their approval status.'}
         </p>
       </div>
 

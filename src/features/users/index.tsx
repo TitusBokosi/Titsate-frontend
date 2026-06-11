@@ -1,17 +1,15 @@
-import { useState } from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { useUserById } from '@/features/users/hooks/useUsers'
 import { Loader2 } from 'lucide-react'
 import { DashboardHeader } from './components/header'
 import { UserEnrollments } from './components/UserEnrollments'
 import { UserProgress } from './components/UserProgress'
 import { UserDashboardSettings } from './components/UserDashboardSettings'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export function UserDashboard() {
   const { userId } = useParams()
-  const [showSettings, setShowSettings] = useState(false)
-
+  const location = useLocation()
+  
   const {
      data:user,
     isLoading,
@@ -19,10 +17,12 @@ export function UserDashboard() {
     error,
   } = useUserById(userId!)
 
+  // Determine active view from URL
+  const isProgress = location.pathname.endsWith('/progress')
+  const isLearning = !isProgress
 
- return (
-      <div className="min-h-screen bg-background pt-20 md:pt-24 pb-12">
-        <div className="container max-w-6xl mx-auto px-4 sm:px-6">
+  return (
+    <div className="pb-12">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-24">
               <Loader2 className="size-12 text-primary animate-spin mb-4" />
@@ -36,34 +36,24 @@ export function UserDashboard() {
               <p className="text-sm mt-4 p-4 bg-muted text-left overflow-auto rounded-md font-mono">{error?.message}</p>
             </div>
           ) :  (
-            <div className="space-y-8">
-              <DashboardHeader 
-                user={user!} 
-                isSettingsActive={showSettings} 
-                onToggleSettings={() => setShowSettings(!showSettings)} 
-              />
+            <div className="space-y-8 animate-in fade-in duration-500">
+            
               
-              {showSettings ? (
+              {isLearning && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                  <UserDashboardSettings user={user!} />
+                   <UserEnrollments userId={userId!} />
                 </div>
-              ) : (
-                <Tabs defaultValue="learning" className="w-full animate-in fade-in slide-in-from-top-4 duration-500">
-                  <TabsList className="mb-6 w-full md:w-auto flex overflow-x-auto scrollbar-hide">
-                    <TabsTrigger value="learning" className="flex-1 md:flex-none">My Learning</TabsTrigger>
-                    <TabsTrigger value="progress" className="flex-1 md:flex-none">Progress</TabsTrigger>
-                  </TabsList>
-                  <TabsContent value="learning" className="outline-none">
-                    <UserEnrollments userId={userId!} />
-                  </TabsContent>
-                  <TabsContent value="progress" className="outline-none">
-                    <UserProgress userId={userId!} />
-                  </TabsContent>
-                </Tabs>
+              )}
+
+              {isProgress && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <UserProgress userId={userId!} />
+                </div>
               )}
             </div>
-          )}
-        </div>
-      </div>
- )
+        )}
+    </div>
+  );
 }
+
+export * from './pages/SharedProfilePage';

@@ -1,7 +1,5 @@
-export * from './layouts/AdminLayout';
 export * from './pages/DashboardOverview';
 export * from './pages/UserManagementPage';
-export * from './pages/AdminProfilePage';
 export * from './pages/ContentApprovalsPage';
 export * from './pages/CategoryManagementPage';
 export * from './pages/AnnouncementsPage';
