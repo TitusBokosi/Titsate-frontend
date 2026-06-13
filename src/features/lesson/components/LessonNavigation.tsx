@@ -62,7 +62,7 @@ export function LessonNavigation({
          ) : (
            <Button 
             variant="secondary" 
-            className="h-14 px-10 rounded-2xl font-bold"
+            className="h-14 px-10 rounded-md font-bold"
             onClick={() => navigate(`/courses/${courseId}`)}
            >
              Enroll to Track Progress

@@ -11,21 +11,22 @@ import {
 type Props = {
   title: string;
   description: string;
-  icon: string;
+  icon: React.ElementType;
 };
 
-export default function AboutCard({ title, description, icon }: Props) {
+export default function AboutCard({ title, description, icon: Icon }: Props) {
   return (
-    <Card className="relative mx-auto w-full max-w-sm pt-0 border-0">
-      <div className="absolute inset-0  aspect-video text-center " />
-      <img
-        src={icon}
-        alt="Event cover"
-        className="relative  mx-auto  aspect-video w-1/3 object-cover brightness-60 grayscale dark:brightness-0"
-      />
+    <Card className=" relative mx-auto w-full max-w-sm pt-0 border-0">
+      
+<div className='bg-white w-fit rounded-xl'>
+        <Icon className="relative mx-auto w-1/3 h-20 text-primary" />
+</div>
+
       <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardTitle className='font-bold text-xl'>{title}</CardTitle>
+        <CardDescription className="whitespace-pre-line ">
+          {description}
+        </CardDescription>
       </CardHeader>
     </Card>
   );
