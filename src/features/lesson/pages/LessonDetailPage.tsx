@@ -129,7 +129,7 @@ export function LessonDetailPage() {
       {/* MOBILE TOGGLE */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="lg:hidden fixed bottom-6 right-6 z-50 p-4 bg-primary text-white rounded-full shadow-lg"
+        className="lg:hidden fixed bottom-6 right-6 z-50 p-4 bg-primary text-white rounded-full shadow-lg border-white border-2"
       >
         {isSidebarOpen ? <X /> : <Menu />}
       </button>

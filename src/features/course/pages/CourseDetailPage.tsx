@@ -97,7 +97,7 @@ export function CourseDetailPage() {
 
       <div className="max-w-5xl mx-auto px-6 py-16 grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2">
-          <CourseBenefits />
+          <CourseBenefits benefits={course.benefits} />
           <CourseSyllabus
             courseId={courseId!}
             topics={course.topics || []}

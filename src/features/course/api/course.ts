@@ -23,6 +23,11 @@ export interface Topic {
   feedback?: string
 }
 
+export interface Benefit {
+  id: string
+  content: string
+}
+
 export interface Course {
   id: string
   courseName: string
@@ -36,6 +41,7 @@ export interface Course {
     categoryName: string
   }
   topics?: Topic[]
+  benefits?: Benefit[]
 }
 
 export interface CourseResponse {

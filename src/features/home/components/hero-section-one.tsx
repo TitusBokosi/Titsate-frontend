@@ -6,15 +6,20 @@ import { HeroHeader } from '../../../components/header';
 import { ChevronRight, CirclePlay } from 'lucide-react';
 import hero from '../../../assets/hero.jpeg';
 
-/*import { VercelFull } from '@/components/ui/svgs/vercel';
-import { Spotify } from '@/components/ui/svgs/spotify';
-import { SupabaseFull } from '@/components/ui/svgs/supabase';*/
+import Marquee from "../components/Marquee";
+
+import github from "../../../assets/marquee/github-142-svgrepo-com.svg";
+import java from "../../../assets/marquee/java-svgrepo-com.svg";
+import reactLogo from "../../../assets/marquee/react-svgrepo-com.svg";
+import javascript from "../../../assets/marquee/javascript-svgrepo-com.svg";
+import node from "../../../assets/marquee/node-js-svgrepo-com.svg";
 
 import { useAuthContext } from '@/providers/AuthProvider';
 
 export default function HeroSection() {
   const { user } = useAuthContext();
   const role = user?.role;
+  const logos = [github, java, reactLogo, javascript, node];
 
   return (
     <>
@@ -47,9 +52,9 @@ export default function HeroSection() {
                   </div>
                 </div>
 
-                <div className="mt-10 animate-in fade-in duration-1000 delay-500">
-                  <p className="text-muted-foreground">Trusted by teams at :</p>
-                </div>
+               <div className="mt-10 animate-in fade-in duration-900 delay-100">
+  <Marquee items={logos} speed={5} size={36} />
+</div>
               </div>
             </div>
 

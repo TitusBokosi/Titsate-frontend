@@ -43,7 +43,7 @@ export function CourseCard({
 
   const buttonText = isEnrolled 
     ? (isCompleted ? "Finished" : "Continue Learning") 
-    : "Enroll Now";
+    : "Open";
 
   const statusColors = {
     PENDING: "bg-yellow-500/90 text-white",
