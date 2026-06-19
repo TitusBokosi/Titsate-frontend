@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCourses } from '../hooks/useCourses';
 import { useCategories } from '../hooks/useCategories';
 import { CourseCard } from '../components/CourseCard';
@@ -30,7 +30,9 @@ export function CoursesPage() {
 
   const { data: coursesData, isLoading: isLoadingCourses, isError: isErrorCourses } = useCourses({ 
     limit: ITEMS_PER_PAGE, 
-    skip 
+    skip,
+    search: search.trim() || undefined,
+    categoryId: selectedCategory || undefined,
   });
   
   const { data: categoriesData } = useCategories();
@@ -39,6 +41,10 @@ export function CoursesPage() {
   const { data: progressRes } = useMyProgress({ enabled: isAuthenticated });
 
   const totalPages = coursesData?.metadata?.totalPages || 0;
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, selectedCategory]);
 
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
@@ -50,14 +56,10 @@ export function CoursesPage() {
   const enrollments = enrollmentsRes?.data || [];
   const completedLessonIds = new Set(progressRes?.data?.map((p: any) => p.lessonid) || []);
 
-  const filteredCourses = coursesData?.data?.filter(course => {
-    const matchesSearch = course.courseName.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = selectedCategory ? course.category?.categoryid === selectedCategory : true;
-    return matchesSearch && matchesCategory;
-  }) || [];
+  const filteredCourses = coursesData?.data || [];
 
   return (
-    <div className="min-h-screen bg-background pt-24 pb-12">
+    <div className="min-h-screen bg-background pt-24 pb-12 md:px-50">
       {/* Hero Section */}
       <section className="relative py-12 px-6 overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-full opacity-10 blur-3xl pointer-events-none">
@@ -75,8 +77,8 @@ export function CoursesPage() {
       </section>
 
       {/* Filter & Search Section */}
-      <section className="max-w-7xl mx-auto px-6 mb-12">
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-card/50 p-4 rounded-2xl border border-white/5 backdrop-blur-md shadow-xl">
+      <section className="max-w-7xl mx-auto px-6 mb-12 ">
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between bg-card/50 p-4 rounded-sm border-b-2 border-gray-300">
           <div className="relative w-full md:max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
@@ -130,7 +132,7 @@ export function CoursesPage() {
             <p className="text-muted-foreground">Try adjusting your filters or search terms.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-10">
             {filteredCourses.map((course) => {
               const isEnrolled = isAuthenticated && enrollments.some((e: any) => e.courseid === course.id);
               const courseLessons = course.topics?.flatMap((t: any) => t.lessons) || [];
@@ -156,7 +158,7 @@ export function CoursesPage() {
         )}
 
         {/* Pagination */}
-        {!search && !selectedCategory && totalPages > 1 && (
+        {totalPages > 1 && (
           <div className="mt-16 flex justify-center">
             <Pagination>
               <PaginationContent>

@@ -27,12 +27,7 @@ export function DashboardHeader({
         <CardHeader className="p-5 md:p-6">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4 text-center md:text-left">
-              <div className={cn(
-                "p-3 rounded-xl transition-colors",
-                isSettingsActive ? "bg-white/20" : "bg-primary/10"
-              )}>
-                 {isSettingsActive ? <X className="size-6 text-white" /> : <UserIcon className="size-6 text-primary group-hover:scale-110 transition-transform" />}
-              </div>
+             
               <div>
                 <CardTitle className="text-xl md:text-2xl font-bold tracking-tight mb-1">
                   {isSettingsActive ? "Account Settings" : `Welcome back, ${user.firstname} ${user.lastname}`}
@@ -56,10 +51,7 @@ export function DashboardHeader({
                   {user.role}
                 </div>
               )}
-              <Settings className={cn(
-                "size-5 transition-all duration-500",
-                isSettingsActive ? "rotate-90 text-white" : "text-muted-foreground group-hover:rotate-45"
-              )} />
+            
             </div>
           </div>
         </CardHeader>

@@ -57,7 +57,7 @@ export interface CourseResponse {
   data: Course[]
 }
 
-export const getCourses = async (params?: { limit?: number; skip?: number;search?: string }): Promise<CourseResponse> => {
+export const getCourses = async (params?: { limit?: number; skip?: number; search?: string; categoryId?: string }): Promise<CourseResponse> => {
   const res = await api.get('/courses', { params })
   return res.data
 }

@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react'
 import { DashboardHeader } from './components/header'
 import { UserEnrollments } from './components/UserEnrollments'
 import { UserProgress } from './components/UserProgress'
-import { UserDashboardSettings } from './components/UserDashboardSettings'
+import { UserProjects } from './components/UserProjects'
 
 export function UserDashboard() {
   const { userId } = useParams()
@@ -19,7 +19,8 @@ export function UserDashboard() {
 
   // Determine active view from URL
   const isProgress = location.pathname.endsWith('/progress')
-  const isLearning = !isProgress
+  const isProjects = location.pathname.endsWith('/projects')
+  const isLearning = !isProgress && !isProjects
 
   return (
     <div className="pb-12">
@@ -37,8 +38,6 @@ export function UserDashboard() {
             </div>
           ) :  (
             <div className="space-y-8 animate-in fade-in duration-500">
-            
-              
               {isLearning && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                    <UserEnrollments userId={userId!} />
@@ -48,6 +47,12 @@ export function UserDashboard() {
               {isProgress && (
                 <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <UserProgress userId={userId!} />
+                </div>
+              )}
+
+              {isProjects && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                  <UserProjects userId={userId!} />
                 </div>
               )}
             </div>

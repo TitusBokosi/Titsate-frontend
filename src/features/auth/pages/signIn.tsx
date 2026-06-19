@@ -18,8 +18,9 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { useAuthContext } from "@/providers/AuthProvider"
 import { loginUser } from "@/features/auth/api/auth"
 import { toast } from "sonner"
-import { useNavigate, Link } from "react-router-dom"
+import { useLocation, useNavigate, Link } from "react-router-dom"
 import { Loader2 } from "lucide-react"
+import GoogleLogo from "@/assets/google-color-svgrepo-com.svg"
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -32,7 +33,12 @@ type LoginFormValues = z.infer<typeof loginSchema>
 export function SignIn() {
   const { login } = useAuthContext()
   const navigate = useNavigate()
+  const location = useLocation()
   const [isLoading, setIsLoading] = useState(false)
+  const from = (location.state as { from?: { pathname?: string; search?: string } } | null)?.from
+  const redirectTo = from?.pathname
+    ? `${from.pathname}${from.search || ''}`
+    : '/'
 
   const {
     register,
@@ -64,8 +70,7 @@ export function SignIn() {
       
       toast.success("Logged in successfully")
       
-      // Redirect to home as requested (placeholder for dashboard)
-      navigate("/")
+      navigate(redirectTo, { replace: true })
     } catch (error: any) {
       console.error("Login failed:", error)
       toast.error(error.response?.data?.message || "Invalid email or password")
@@ -118,7 +123,7 @@ export function SignIn() {
                   <p className="text-xs text-destructive">{errors.password.message}</p>
                 )}
               </div>
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <Checkbox 
                   id="rememberMe" 
                   checked={rememberMe}
@@ -130,7 +135,7 @@ export function SignIn() {
                 >
                   Remember me
                 </label>
-              </div>
+              </div>*/}
             </div>
             <Button type="submit" className="w-full mt-6" disabled={isLoading}>
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -139,8 +144,25 @@ export function SignIn() {
           </form>
         </CardContent>
         <CardFooter className="flex-col gap-2">
-          <Button variant="outline" className="w-full">
-            Login with Google
+          <div className="relative w-full py-2">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={() => {
+              window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/auth/google`;
+            }}
+          >
+            <img src={GoogleLogo} alt="Google" className="mr-2 h-4 w-4" />
+            Continue with Google
           </Button>
         </CardFooter>
       </Card>

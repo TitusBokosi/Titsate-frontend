@@ -12,6 +12,7 @@ export function CreatorContentPage() {
     title?: string,
     description?: string,
     categoryId?: string | null,
+    benefits?: string[],
   ) => {
     if (!title || title.trim() === '') return;
     try {
@@ -19,6 +20,7 @@ export function CreatorContentPage() {
         courseName: title,
         description: description ?? 'Add a description for your course here.',
         ...(categoryId ? { categoryId } : {}),
+        ...(benefits ? { benefits } : {}),
       });
       if (newCourse && 'id' in newCourse) {
         navigate(`/creator/manage/${newCourse.id}`);

@@ -21,9 +21,10 @@ import {
   GraduationCap,
   ChevronRight,
   PlayCircle,
+  ArrowRight,
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { buttonVariants } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 export function UserProgress({ userId }: { userId: string }) {
@@ -101,14 +102,20 @@ export function UserProgress({ userId }: { userId: string }) {
       </div>
 
       {courseProgressData.length === 0 ? (
-        <div className="bg-muted/30 border border-dashed rounded-xl p-8 md:p-12 text-center flex flex-col items-center justify-center">
+        <div className="bg-muted/30 border border-dashed rounded-2xl p-8 md:p-12 text-center flex flex-col items-center justify-center">
           <BookOpen className="size-10 md:size-12 text-muted-foreground/50 mb-4" />
           <p className="text-muted-foreground font-medium">
-            No active courses{' '}
+            No active courses
           </p>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-sm mb-8">
             Enroll in a course to see your progress here.
           </p>
+          <Link to="/courses">
+            <Button className="font-bold gap-2 group shadow-lg shadow-primary/10">
+              Browse Courses
+              <ArrowRight className="size-4 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
         </div>
       ) : (
         <div className="space-y-8 md:space-y-12 pb-20">

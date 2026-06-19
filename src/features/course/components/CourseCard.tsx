@@ -75,31 +75,31 @@ export function CourseCard({
         </div>
       </div>
       
-      <CardHeader className="p-4 pb-0">
-        <div className="flex items-center gap-4 text-xs text-muted-foreground mb-2">
+      <CardHeader className="p-3 pb-0">
+        <div className="flex items-center gap-3 text-[10px] text-muted-foreground mb-1.5 font-medium">
           <div className="flex items-center gap-1">
-            <BookOpen className="size-3" />
+            <BookOpen className="size-2.5" />
             <span>{displayLessonCount} Lessons</span>
           </div>
           <div className="flex items-center gap-1">
-            <Clock className="size-3" />
+            <Clock className="size-2.5" />
             <span>{duration}</span>
           </div>
         </div>
-        <CardTitle className="text-xl font-bold line-clamp-1 group-hover:text-primary transition-colors">
+        <CardTitle className="text-base font-bold line-clamp-1 group-hover:text-primary transition-colors">
           {courseName}
         </CardTitle>
-        <CardDescription className="line-clamp-2 mt-2 text-sm leading-relaxed">
+        <CardDescription className="line-clamp-2 mt-1 text-[11px] leading-snug">
           {description}
         </CardDescription>
       </CardHeader>
 
-      <CardFooter className="p-4 pt-4">
+      <CardFooter className="p-3 pt-3">
         <Link 
           to={`/courses/${courseId}`}
           className={cn(
-            buttonVariants({ variant: isCompleted ? "outline" : "default" }), 
-            "w-full font-semibold shadow-lg transition-all active:scale-[0.98]",
+            buttonVariants({ variant: isCompleted ? "outline" : "default", size: "sm" }), 
+            "w-full h-8 text-xs font-bold shadow-lg transition-all active:scale-[0.98]",
             !isCompleted && "bg-primary hover:bg-primary/90 text-primary-foreground shadow-primary/20"
           )}
         >

@@ -82,6 +82,7 @@ export function DashboardSidebar({ mobileOpen, setMobileOpen }: { mobileOpen?: b
             items: [
                 { name: 'My Learning', href: `/dashboard/${user?.id}/learning`, icon: BookOpen },
                 { name: 'Progress', href: `/dashboard/${user?.id}/progress`, icon: GraduationCap },
+                { name: 'Project Submissions', href: `/dashboard/${user?.id}/projects`, icon: FolderKanban },
             ]
         });
     }

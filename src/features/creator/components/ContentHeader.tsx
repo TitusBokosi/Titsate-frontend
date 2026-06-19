@@ -21,6 +21,8 @@ type Props = {
   setDescriptionValue?: (v: string) => void;
   categoryValue?: string | null;
   setCategoryValue?: (v: string | null) => void;
+  benefitsValue?: string[];
+  setBenefitsValue?: (v: string[]) => void;
   onUpdateCourseDetails?: () => Promise<void>;
 };
 
@@ -40,6 +42,8 @@ export function ContentHeader({
   setDescriptionValue,
   categoryValue,
   setCategoryValue,
+  benefitsValue,
+  setBenefitsValue,
   onUpdateCourseDetails,
 }: Props) {
   const { data: categoriesData } = useCategories();
@@ -95,6 +99,8 @@ export function ContentHeader({
                   setDescriptionValue(course?.description || '');
                 setCategoryValue &&
                   setCategoryValue(course?.category?.categoryid || null);
+                setBenefitsValue &&
+                  setBenefitsValue(course?.benefits?.map((b: any) => b.content) || []);
                 setIsEditingDetails && setIsEditingDetails(true);
               }}
             >
@@ -134,8 +140,47 @@ export function ContentHeader({
               </div>
             </div>
 
-            <div className="flex gap-2 mt-2">
-              <Button onClick={onUpdateCourseDetails}>Save</Button>
+            <div>
+              <label className="text-sm font-medium">Course Benefits</label>
+              <div className="space-y-4 mt-2">
+                {(benefitsValue || []).map((benefit, index) => (
+                  <div key={index} className="flex gap-2">
+                    <Input
+                      value={benefit}
+                      onChange={(e) => {
+                        const newBenefits = [...(benefitsValue || [])];
+                        newBenefits[index] = e.target.value;
+                        setBenefitsValue && setBenefitsValue(newBenefits);
+                      }}
+                      placeholder={`Benefit #${index + 1}`}
+                      className="bg-muted/30"
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        const newBenefits = benefitsValue?.filter((_, i) => i !== index);
+                        setBenefitsValue && setBenefitsValue(newBenefits || []);
+                      }}
+                      className="text-destructive hover:bg-destructive/10"
+                    >
+                      <X className="size-4" />
+                    </Button>
+                  </div>
+                ))}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setBenefitsValue && setBenefitsValue([...(benefitsValue || []), ''])}
+                  className="w-full border-dashed"
+                >
+                  + Add Benefit
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex gap-2 mt-4 pt-4 border-t">
+              <Button onClick={onUpdateCourseDetails}>Save Changes</Button>
               <Button
                 variant="ghost"
                 onClick={() =>

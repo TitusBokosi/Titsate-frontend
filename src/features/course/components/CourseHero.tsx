@@ -8,7 +8,9 @@ interface CourseHeroProps {
   course: any;
   isEnrolled: boolean;
   onEnroll: () => void;
+  onUnenroll: () => void;
   isEnrolling: boolean;
+  isUnenrolling: boolean;
   completedCount?: number;
   totalCount?: number;
 }
@@ -17,7 +19,9 @@ export function CourseHero({
   course, 
   isEnrolled, 
   onEnroll, 
+  onUnenroll,
   isEnrolling,
+  isUnenrolling,
   completedCount = 0,
   totalCount = 0
 }: CourseHeroProps) {
@@ -57,10 +61,7 @@ export function CourseHero({
                   {course.status.replace('_', ' ')}
                 </Badge>
               )}
-              <div className="flex items-center text-sm text-zinc-400">
-                <Clock className="size-4 mr-1" />
-                Self-paced
-              </div>
+             
             </div>
             
             <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
@@ -72,18 +73,15 @@ export function CourseHero({
 
             <div className="flex flex-wrap gap-4">
               {isEnrolled ? (
-                <Link 
-                  to={`/courses/${course.id}/topics/${course.topics?.[0]?.id}/lessons/${course.topics?.[0]?.lessons?.[0]?.id}`}
-                  className={cn(
-                    buttonVariants({ variant: (totalCount > 0 && completedCount >= totalCount) ? "outline" : "default" }), 
-                    "font-bold h-12 px-8 min-w-[200px] transition-all",
-                    (totalCount > 0 && completedCount >= totalCount) 
-                      ? "border-green-500 text-green-500 hover:bg-green-500/10" 
-                      : "bg-green-600 hover:bg-green-700 text-white"
-                  )}
+                <Button
+                  onClick={onUnenroll}
+                  disabled={isUnenrolling}
+                  variant="outline"
+                  className="border-white/10 text-zinc-400 hover:text-white hover:bg-red-500/10 hover:border-red-500/50 font-bold h-12 px-8 min-w-[200px] transition-all"
                 >
-                  {totalCount > 0 && completedCount >= totalCount ? "Finished" : "Continue Learning"}
-                </Link>
+                  {isUnenrolling && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Deregister
+                </Button>
               ) : (
                 <Button 
                   onClick={onEnroll} 
@@ -97,15 +95,7 @@ export function CourseHero({
             </div>
           </div>
 
-          <div className="w-full md:w-80 shrink-0">
-             <div className="aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-xl">
-                <img 
-                  src={course.imageUrl || `https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=800&auto=format&fit=crop`} 
-                  alt={course.courseName} 
-                  className="w-full h-full object-cover"
-                />
-             </div>
-          </div>
+
         </div>
       </div>
     </div>

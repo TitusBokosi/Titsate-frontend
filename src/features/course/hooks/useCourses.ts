@@ -2,7 +2,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import * as courseApi from '../api/course'
 
-export const useCourses = (params?: { limit?: number; skip?: number }) => {
+export const useCourses = (params?: { limit?: number; skip?: number; search?: string; categoryId?: string }) => {
   return useQuery({
     queryKey: ['courses', params],
     queryFn: () => courseApi.getCourses(params),

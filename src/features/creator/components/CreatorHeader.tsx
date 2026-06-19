@@ -7,6 +7,7 @@ type Props = {
     title: string,
     description?: string,
     categoryId?: string | null,
+    benefits?: string[]
   ) => Promise<any> | any;
   isProcessing?: boolean;
 };
