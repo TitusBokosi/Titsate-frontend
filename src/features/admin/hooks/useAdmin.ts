@@ -16,6 +16,13 @@ export const useAdminContent = () => {
   })
 }
 
+export const useAdminAnalytics = () => {
+  return useQuery({
+    queryKey: ['admin', 'analytics'],
+    queryFn: adminApi.getAdminAnalytics,
+  })
+}
+
 export const useUserActions = () => {
   const queryClient = useQueryClient()
 

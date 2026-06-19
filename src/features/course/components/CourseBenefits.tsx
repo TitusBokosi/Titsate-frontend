@@ -6,10 +6,6 @@ interface CourseBenefitsProps {
 }
 
 export function CourseBenefits({ benefits }: CourseBenefitsProps) {
-  // Use provided benefits or fall back to empty array if needed, 
-  // though we might want to keep the hardcoded ones as a fallback 
-  // or just show nothing if none in DB. 
-  // The user wants them in DB, so if empty, we might show a message or nothing.
   
   if (!benefits || benefits.length === 0) {
     return null; // Or show nothing if no benefits defined yet

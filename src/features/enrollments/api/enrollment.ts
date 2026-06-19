@@ -25,3 +25,13 @@ export const updateEnrollmentStatus = async (enrollmentId: string, status: strin
   const res = await api.patch(`/enrollments/${enrollmentId}`, { status })
   return res.data
 }
+
+export const dropEnrollment = async (enrollmentId: string) => {
+  const res = await api.patch(`/enrollments/${enrollmentId}`, { status: 'DROPPED' })
+  return res.data
+}
+
+export const deleteEnrollment = async (enrollmentId: string) => {
+  const res = await api.delete(`/enrollments/${enrollmentId}`)
+  return res.data
+}

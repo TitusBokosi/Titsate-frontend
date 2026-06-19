@@ -17,6 +17,10 @@ const links = [
                 title: 'About Us',
                 to: '/about',
             },
+            {
+                title: 'Talk to Us',
+                to: '/contact',
+            },
         ],
     },
     {

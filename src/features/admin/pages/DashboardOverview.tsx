@@ -1,8 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 import api from '@/lib/axios'
-import { Users, FileCheck, PlayCircle, Trophy, BarChart3, ArrowUpRight, Loader2 } from "lucide-react"
+import { Users, FileCheck, PlayCircle, Trophy, ArrowUpRight, Loader2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { useAdminAnalytics } from '../hooks/useAdmin'
 
 export function DashboardOverview() {
   const { data: stats, isLoading } = useQuery({
@@ -12,6 +13,7 @@ export function DashboardOverview() {
       return res.data.data
     }
   })
+  const { data: analytics, isLoading: isLoadingAnalytics } = useAdminAnalytics()
 
   if (isLoading) {
     return (
@@ -27,6 +29,10 @@ export function DashboardOverview() {
     { title: 'Pending Content', value: stats.pendingCourses, icon: FileCheck, color: 'text-yellow-500', trend: '-2' },
     { title: 'Creators', value: stats.totalCreators, icon: Trophy, color: 'text-purple-500', trend: '+1' },
   ]
+  const maxEnrollmentCount = Math.max(
+    1,
+    ...(analytics?.enrollmentTrends.map((trend) => trend.count) || [0])
+  )
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -52,19 +58,61 @@ export function DashboardOverview() {
         ))}
       </div>
 
-      {/* Placeholder for charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-         <Card className="border-none bg-card/50 shadow-md ring-1 ring-white/5 min-h-[300px] flex items-center justify-center">
-            <div className="text-center italic text-muted-foreground opacity-50 flex flex-col items-center">
-               <BarChart3 className="size-12 mb-2" />
-               Enrollment Trends (Chart coming soon)
-            </div>
+         <Card className="border-none bg-card/50 shadow-md ring-1 ring-white/5 min-h-[300px]">
+            <CardHeader>
+              <CardTitle className="text-base">Enrollment Trends</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoadingAnalytics ? (
+                <div className="flex h-44 items-center justify-center">
+                  <Loader2 className="size-6 animate-spin text-primary" />
+                </div>
+              ) : (
+                <div className="flex h-44 items-end gap-1">
+                  {analytics?.enrollmentTrends.map((trend) => (
+                    <div key={trend.date} className="flex min-w-0 flex-1 flex-col items-center gap-2">
+                      <div
+                        className="w-full rounded-sm bg-primary/80"
+                        title={`${trend.date}: ${trend.count} enrollments`}
+                        style={{ height: `${Math.max(8, (trend.count / maxEnrollmentCount) * 100)}%` }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+              <p className="mt-4 text-xs text-muted-foreground">Last 30 days</p>
+            </CardContent>
          </Card>
-         <Card className="border-none bg-card/50 shadow-md ring-1 ring-white/5 min-h-[300px] flex items-center justify-center">
-            <div className="text-center italic text-muted-foreground opacity-50 flex flex-col items-center">
-               <Trophy className="size-12 mb-2" />
-               Top Performing Creators (Leaderboard coming soon)
-            </div>
+         <Card className="border-none bg-card/50 shadow-md ring-1 ring-white/5 min-h-[300px]">
+            <CardHeader>
+              <CardTitle className="text-base">Top Creators</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoadingAnalytics ? (
+                <div className="flex h-44 items-center justify-center">
+                  <Loader2 className="size-6 animate-spin text-primary" />
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {analytics?.topCreators.length ? analytics.topCreators.map((creator, index) => (
+                    <div key={creator.id} className="flex items-center justify-between rounded-lg bg-background/60 px-4 py-3">
+                      <div className="flex items-center gap-3">
+                        <span className="flex size-7 items-center justify-center rounded-full bg-primary/10 text-xs font-bold text-primary">
+                          {index + 1}
+                        </span>
+                        <span className="font-medium">{creator.name}</span>
+                      </div>
+                      <span className="text-sm text-muted-foreground">{creator.courseCount} courses</span>
+                    </div>
+                  )) : (
+                    <div className="flex h-44 items-center justify-center text-sm text-muted-foreground">
+                      No creator activity yet.
+                    </div>
+                  )}
+                </div>
+              )}
+            </CardContent>
          </Card>
       </div>
     </div>

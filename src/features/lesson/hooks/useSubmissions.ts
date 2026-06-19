@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/axios';
 import { toast } from 'sonner';
 
-export const useSubmission = (lessonId: string) => {
+export const useSubmission = (lessonId: string, options = {}) => {
   return useQuery({
     queryKey: ['submission', lessonId],
     queryFn: async () => {
@@ -10,6 +10,7 @@ export const useSubmission = (lessonId: string) => {
       return res.data;
     },
     enabled: !!lessonId,
+    ...options,
   });
 };
 

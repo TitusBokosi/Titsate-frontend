@@ -61,7 +61,7 @@ export function CourseSyllabus({ courseId, topics, isEnrolled }: CourseSyllabusP
                   <div 
                     key={lesson.id} 
                     className="flex items-center justify-between p-3 px-15 rounded-lg hover:bg-primary/5 transition-colors group cursor-pointer"
-                    onClick={() => navigate(`/courses/${courseId}/topics/${topic.id}`)}
+                    onClick={() => navigate(`/courses/${courseId}/topics/${topic.id}/lessons/${lesson.id}`)}
                   >
                     <div className="flex items-center gap-3">
                       <BookOpen className="size-4 text-primary" />

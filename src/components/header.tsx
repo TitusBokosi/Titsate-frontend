@@ -10,6 +10,7 @@ const menuItems = [
   { name: 'Home', href: '/' },
   { name: 'Courses', href: '/courses' },
   { name: 'About Us', href: '/about' },
+  { name: 'Talk to Us', href: '/contact' },
 ];
 
 export const HeroHeader = () => {

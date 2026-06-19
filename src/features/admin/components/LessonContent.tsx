@@ -16,6 +16,8 @@ interface LessonContentProps {
 export function LessonContent({ courseId, topicId, lesson }: LessonContentProps) {
   const { approveLesson, rejectLesson, isProcessing } = useContentActions()
   const [isRejectDialogOpen, setIsRejectDialogOpen] = useState(false)
+  const videoUrl = lesson.videoUrl?.trim()
+  const isEmbeddableVideo = videoUrl && /(?:youtube\.com\/embed\/|player\.vimeo\.com\/video\/)/.test(videoUrl)
 
   const handleReject = (feedback: string) => {
     rejectLesson({ courseId, topicId, lessonId: lesson.id, feedback })
@@ -92,16 +94,40 @@ export function LessonContent({ courseId, topicId, lesson }: LessonContentProps)
         {/* Media Content */}
         {lesson.lessonType === 'VIDEO' && (
           <div className="space-y-4">
-            <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black ring-1 ring-white/10 shadow-2xl flex flex-col items-center justify-center relative group">
-               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-               <Video className="size-16 text-white/20 mb-4" />
-               <p className="text-white font-medium">Video Player Placeholder</p>
-               <p className="text-white/40 text-sm">{lesson.videoUrl}</p>
-               
-               <Button variant="secondary" size="sm" className="mt-4 gap-2 h-9">
-                  <ExternalLink className="size-4" /> Open Source URL
-               </Button>
+            <div className="aspect-video w-full overflow-hidden rounded-2xl bg-black ring-1 ring-white/10 shadow-2xl">
+              {videoUrl ? (
+                isEmbeddableVideo ? (
+                  <iframe
+                    src={videoUrl}
+                    title={lesson.lessonName}
+                    className="h-full w-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <video
+                    src={videoUrl}
+                    controls
+                    className="h-full w-full bg-black"
+                  />
+                )
+              ) : (
+                <div className="flex h-full flex-col items-center justify-center text-center text-muted-foreground">
+                  <Video className="mb-4 size-16 opacity-30" />
+                  <p className="font-medium text-foreground">No video source provided</p>
+                </div>
+              )}
             </div>
+            {videoUrl && (
+              <Button
+                variant="secondary"
+                size="sm"
+                className="gap-2 h-9"
+                onClick={() => window.open(videoUrl, '_blank', 'noopener,noreferrer')}
+              >
+                <ExternalLink className="size-4" /> Open Source URL
+              </Button>
+            )}
           </div>
         )}
 

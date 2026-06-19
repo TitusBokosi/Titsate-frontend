@@ -19,6 +19,7 @@ import { useAuthContext } from "@/providers/AuthProvider"
 import { toast } from "sonner"
 import { useNavigate, Link } from "react-router-dom"
 import { Loader2 } from "lucide-react"
+import GoogleLogo from "@/assets/google-color-svgrepo-com.svg"
 
 const signupSchema = z.object({
   firstname: z.string().min(2, "First name is too short"),
@@ -144,8 +145,25 @@ export function SignUp() {
           </form>
         </CardContent>
         <CardFooter className="flex-col gap-2">
-          <Button variant="outline" className="w-full">
-            Create Account with Google
+          <div className="relative w-full py-2">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
+            </div>
+          </div>
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={() => {
+              window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/auth/google`;
+            }}
+          >
+            <img src={GoogleLogo} alt="Google" className="mr-2 h-4 w-4" />
+            Continue with Google
           </Button>
         </CardFooter>
       </Card>

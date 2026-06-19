@@ -15,6 +15,7 @@ import javascript from "../../../assets/marquee/javascript-svgrepo-com.svg";
 import node from "../../../assets/marquee/node-js-svgrepo-com.svg";
 
 import { useAuthContext } from '@/providers/AuthProvider';
+import Announcements from './Announcements';
 
 export default function HeroSection() {
   const { user } = useAuthContext();
@@ -23,7 +24,7 @@ export default function HeroSection() {
 
   return (
     <>
-      <HeroHeader />
+      <Announcements/>
       <main className="overflow-hidden">
         <section className="bg-linear-to-b to-muted from-background">
           <div className="relative py-36">

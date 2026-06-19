@@ -1,12 +1,14 @@
-import { BookOpen, FileText, Copy, Check } from 'lucide-react';
+import { FileText, Copy, Check, ExternalLink } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useSubmission, useSubmitProject } from '../hooks/useSubmissions';
+import { useAuthContext } from '@/providers/AuthProvider';
 
 interface LessonContentProps {
   lesson: any;
@@ -64,7 +66,12 @@ const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
 export function LessonContent({ lesson }: LessonContentProps) {
   if (!lesson) return null;
 
-  const { data: submissionRes } = useSubmission(lesson.id);
+  const { isAuthenticated } = useAuthContext();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { data: submissionRes } = useSubmission(lesson.id, {
+    enabled: isAuthenticated && lesson.lessonType === 'MINI_PROJECT',
+  });
   const submitProjectMutation = useSubmitProject();
   const [projectUrl, setProjectUrl] = useState('');
 
@@ -72,6 +79,11 @@ export function LessonContent({ lesson }: LessonContentProps) {
 
   const handleSubmit = async () => {
     if (!projectUrl.trim()) return;
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: location } });
+      return;
+    }
+
     await submitProjectMutation.mutateAsync({
       lessonId: lesson.id,
       projectUrl,
@@ -79,11 +91,41 @@ export function LessonContent({ lesson }: LessonContentProps) {
     setProjectUrl('');
   };
 
+  const videoUrl = lesson.videoUrl?.trim();
+  const isEmbeddableVideo = videoUrl && /(?:youtube\.com\/embed\/|player\.vimeo\.com\/video\/)/.test(videoUrl);
+
   return (
     <article className="prose prose-invert max-w-none">
       <h2 className="text-3xl md:text-5xl font-black mb-5 leading-tight">
         {lesson.lessonName}
       </h2>
+
+      {lesson.lessonType === 'VIDEO' && (
+        <div className="not-prose mb-10 overflow-hidden rounded-lg border border-white/10 bg-black">
+          {videoUrl ? (
+            isEmbeddableVideo ? (
+              <iframe
+                src={videoUrl}
+                title={lesson.lessonName}
+                className="aspect-video w-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            ) : (
+              <video
+                src={videoUrl}
+                controls
+                className="aspect-video w-full bg-black"
+              />
+            )
+          ) : (
+            <div className="flex aspect-video flex-col items-center justify-center text-center text-muted-foreground">
+              <FileText className="mb-4 size-12" />
+              <p>No video source available for this lesson yet.</p>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="bg-card/40 backdrop-blur-sm border border-white/10 rounded-3xl p-8 md:p-10 mb-10 leading-relaxed relative overflow-hidden">
         <div className="relative z-10">
@@ -118,12 +160,12 @@ export function LessonContent({ lesson }: LessonContentProps) {
             </div>
             {submission && (
               <Badge variant="secondary" className="bg-white/20 text-white border-0 py-2 px-4 text-sm font-bold">
-                Status: {submission.status}
+                Submitted on {new Date(submission.createdAt).toLocaleDateString()}
               </Badge>
             )}
           </div>
 
-          {!submission ? (
+          <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-4">
               <input
                 type="url"
@@ -137,28 +179,30 @@ export function LessonContent({ lesson }: LessonContentProps) {
                 disabled={!projectUrl || submitProjectMutation.isPending}
                 className="bg-white text-primary font-black px-10 py-4 rounded-md hover:bg-zinc-100 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {submitProjectMutation.isPending ? 'Submitting...' : 'Submit Project'}
+                {submitProjectMutation.isPending
+                  ? 'Submitting...'
+                  : submission
+                    ? 'Update Submission'
+                    : 'Submit Project'}
               </button>
             </div>
-          ) : (
-            <div className="bg-white/10 rounded-2xl p-6 border border-white/20">
-              <p className="text-sm text-white/60 mb-2 font-bold uppercase tracking-wider">Your Submission</p>
-              <a 
-                href={submission.projectUrl} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-white font-medium hover:underline break-all block"
-              >
-                {submission.projectUrl}
-              </a>
-              {submission.feedback && (
-                <div className="mt-4 pt-4 border-t border-white/10">
-                  <p className="text-sm text-white/60 mb-1 font-bold">Feedback:</p>
-                  <p className="text-white/90">{submission.feedback}</p>
-                </div>
-              )}
-            </div>
-          )}
+
+            {submission && (
+              <div className="bg-white/10 rounded-2xl p-6 border border-white/20">
+                <p className="text-sm text-white/60 mb-2 font-bold uppercase tracking-wider">Your Submission</p>
+                <a 
+                  href={submission.projectUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-white font-medium hover:underline break-all inline-flex items-center gap-2"
+                >
+                  {submission.projectUrl}
+                  <ExternalLink className="size-4 shrink-0" />
+                </a>
+
+              </div>
+            )}
+          </div>
         </div>
       )}
     </article>

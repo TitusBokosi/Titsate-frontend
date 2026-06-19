@@ -13,6 +13,11 @@ export interface AdminStats {
   pendingApprovals: number
 }
 
+export interface AdminAnalytics {
+  enrollmentTrends: Array<{ date: string; count: number }>
+  topCreators: Array<{ id: string; name: string; courseCount: number }>
+}
+
 /* ---------------- User Management ---------------- */
 
 export const getAllUsers = async (): Promise<{ data: AdminUser[] }> => {
@@ -38,6 +43,11 @@ export const unsuspendUser = async (userId: string) => {
 export const deleteUserByAdmin = async (userId: string) => {
   const res = await api.delete(`/users/${userId}`)
   return res.data
+}
+
+export const getAdminAnalytics = async (): Promise<AdminAnalytics> => {
+  const res = await api.get('/admin/analytics')
+  return res.data.data
 }
 
 /* ---------------- Content Approval ---------------- */

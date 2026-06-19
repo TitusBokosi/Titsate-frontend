@@ -41,6 +41,7 @@ export function ContentManagementPage() {
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [descriptionValue, setDescriptionValue] = useState('');
   const [categoryValue, setCategoryValue] = useState<string | null>(null);
+  const [benefitsValue, setBenefitsValue] = useState<string[]>([]);
   const [isTopicDialogOpen, setIsTopicDialogOpen] = useState(false);
   const [isLessonDialogOpen, setIsLessonDialogOpen] = useState(false);
   const [lessonTopicId, setLessonTopicId] = useState<string | null>(null);
@@ -84,6 +85,9 @@ export function ContentManagementPage() {
     const payload: any = {};
     if (descriptionValue !== undefined) payload.description = descriptionValue;
     if (categoryValue !== undefined) payload.categoryId = categoryValue;
+    if (benefitsValue !== undefined) {
+      payload.benefits = benefitsValue.filter((b) => b.trim() !== '');
+    }
 
     await updateCourse({ id: course.id, data: payload });
     setIsEditingDetails(false);
@@ -196,6 +200,8 @@ export function ContentManagementPage() {
         setDescriptionValue={setDescriptionValue}
         categoryValue={categoryValue}
         setCategoryValue={setCategoryValue}
+        benefitsValue={benefitsValue}
+        setBenefitsValue={setBenefitsValue}
         onUpdateCourseDetails={handleUpdateCourseDetails}
       />
 

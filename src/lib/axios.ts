@@ -38,9 +38,11 @@ api.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config;
+    const token = getToken();
 
     if (
       error.response?.status === 401 &&
+      token &&
       !originalRequest._retry &&
       !originalRequest.url?.includes('/auth/login')
     ) {

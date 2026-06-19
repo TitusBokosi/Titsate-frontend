@@ -8,6 +8,7 @@ import { TopicDetailPage } from '@/features/topic/pages/TopicDetailPage';
 import { LessonDetailPage } from '@/features/lesson/pages/LessonDetailPage';
 import { SignIn } from '@/features/auth/pages/signIn';
 import { SignUp } from '@/features/auth/pages/signUp';
+import { AuthSuccess } from '@/features/auth/pages/AuthSuccess';
 import { GuestRoute } from './GuestRoute';
 import { UserDashboard, SharedProfilePage } from '@/features/users';
 import {
@@ -27,6 +28,7 @@ import MainLayout from '@/layouts/MainLayout';
 import AuthLayout from '@/layouts/AuthLayout';
 import { DashboardLayout } from '@/layouts/DashboardLayout';
 import AboutUsPage from '@/features/home/pages/AboutUsPage';
+import { ContactPage } from '@/features/support/pages/ContactPage';
 
 const LoginPage = () => <SignIn />;
 const SignupPage = () => <SignUp />;
@@ -54,6 +56,10 @@ export const router = createBrowserRouter([
       {
         path: '/about',
         element: <AboutUsPage />,
+      },
+      {
+        path: '/contact',
+        element: <ContactPage />,
       },
       {
         path: '/courses',
@@ -102,6 +108,7 @@ export const router = createBrowserRouter([
           { index: true, element: <Navigate to="learning" replace /> },
           { path: 'learning', element: <UserDashboard /> },
           { path: 'progress', element: <UserDashboard /> },
+          { path: 'projects', element: <UserDashboard /> },
         ],
       },
       // Protected Admin Routes
@@ -170,6 +177,10 @@ export const router = createBrowserRouter([
           {
             path: '/signup',
             element: <SignupPage />,
+          },
+          {
+            path: '/auth/success',
+            element: <AuthSuccess />,
           },
         ],
       },
