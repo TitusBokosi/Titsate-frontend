@@ -228,11 +228,9 @@ button {
 }
 /* TABLES */
 .markdown-body table {
+  min-width: 600px;
+  width: max-content;
   border-collapse: collapse;
-  width: 100%;
-  margin: 16px 0;
-  font-size: 0.95rem;
-  overflow-x: auto;
 }
 
 .markdown-body th,

@@ -1,8 +1,8 @@
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import { Button } from '@/components/ui/button';
 import {
   Card,
   CardAction,
@@ -11,34 +11,39 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
-import { useAuthContext } from "@/providers/AuthProvider"
-import { loginUser } from "@/features/auth/api/auth"
-import { toast } from "sonner"
-import { useLocation, useNavigate, Link } from "react-router-dom"
-import { Loader2 } from "lucide-react"
-import GoogleLogo from "@/assets/google-color-svgrepo-com.svg"
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { useAuthContext } from '@/providers/AuthProvider';
+import { loginUser } from '@/features/auth/api/auth';
+import { toast } from 'sonner';
+import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { Loader2 } from 'lucide-react';
+import GoogleLogo from '@/assets/google-color-svgrepo-com.svg';
+import { ArrowLeft } from 'lucide-react';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  email: z.string().email('Invalid email address'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
   rememberMe: z.boolean(),
-})
+});
 
-type LoginFormValues = z.infer<typeof loginSchema>
+type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function SignIn() {
-  const { login } = useAuthContext()
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [isLoading, setIsLoading] = useState(false)
-  const from = (location.state as { from?: { pathname?: string; search?: string } } | null)?.from
+  const { login } = useAuthContext();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [isLoading, setIsLoading] = useState(false);
+  const from = (
+    location.state as { from?: { pathname?: string; search?: string } } | null
+  )?.from;
   const redirectTo = from?.pathname
     ? `${from.pathname}${from.search || ''}`
-    : '/'
+    : '/';
 
   const {
     register,
@@ -49,35 +54,35 @@ export function SignIn() {
   } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
       rememberMe: false,
     },
-  })
+  });
 
-  const rememberMe = watch("rememberMe")
+  const rememberMe = watch('rememberMe');
 
   const onSubmit = async (values: LoginFormValues) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       const response = await loginUser({
         email: values.email,
         password: values.password,
-      })
-      
+      });
+
       // Pass token and user to global state
-      login(response.data.user, response.data.accessToken)
-      
-      toast.success("Logged in successfully")
-      
-      navigate(redirectTo, { replace: true })
+      login(response.data.user, response.data.accessToken);
+
+      toast.success('Logged in successfully');
+
+      navigate(redirectTo, { replace: true });
     } catch (error: any) {
-      console.error("Login failed:", error)
-      toast.error(error.response?.data?.message || "Invalid email or password")
+      console.error('Login failed:', error);
+      toast.error(error.response?.data?.message || 'Invalid email or password');
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen px-4">
@@ -102,10 +107,12 @@ export function SignIn() {
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  {...register("email")}
+                  {...register('email')}
                 />
                 {errors.email && (
-                  <p className="text-xs text-destructive">{errors.email.message}</p>
+                  <p className="text-xs text-destructive">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
               <div className="grid gap-2">
@@ -118,9 +125,15 @@ export function SignIn() {
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" {...register("password")} />
+                <Input
+                  id="password"
+                  type="password"
+                  {...register('password')}
+                />
                 {errors.password && (
-                  <p className="text-xs text-destructive">{errors.password.message}</p>
+                  <p className="text-xs text-destructive">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
               {/* <div className="flex items-center space-x-2">
@@ -154,8 +167,8 @@ export function SignIn() {
               </span>
             </div>
           </div>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="w-full"
             onClick={() => {
               window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/auth/google`;
@@ -164,8 +177,18 @@ export function SignIn() {
             <img src={GoogleLogo} alt="Google" className="mr-2 h-4 w-4" />
             Continue with Google
           </Button>
+          <Link
+            to="/"
+            className={cn(
+              buttonVariants({ variant: 'ghost', size: 'sm' }),
+              ' text-muted-foreground hover:text-foreground hidden md:flex items-center gap-2 transition-all font-medium',
+            )}
+          >
+            <ArrowLeft className="size-4" />
+            Return to Website
+          </Link>
         </CardFooter>
       </Card>
     </div>
-  )
+  );
 }
