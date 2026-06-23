@@ -136,6 +136,12 @@ export function LessonContent({ lesson }: LessonContentProps) {
               remarkPlugins={[remarkGfm]}
               components={{
                 code: CodeBlock,
+
+                table: ({ children }) => (
+                  <div className="table-wrapper">
+                    <table>{children}</table>
+                  </div>
+                ),
               }}
             >
               {lesson.content}

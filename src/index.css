@@ -221,13 +221,18 @@ button {
   color: gray(220 20% / 80%);
   padding: 0;
 }
-
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
 /* TABLES */
 .markdown-body table {
   border-collapse: collapse;
   width: 100%;
   margin: 16px 0;
   font-size: 0.95rem;
+  overflow-x: auto;
 }
 
 .markdown-body th,
