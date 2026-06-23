@@ -202,7 +202,7 @@ export function SignUp() {
             to="/"
             className={cn(
               buttonVariants({ variant: 'ghost', size: 'sm' }),
-              ' text-muted-foreground hover:text-foreground hidden md:flex items-center gap-2 transition-all font-medium',
+              ' text-muted-foreground hover:text-foreground  flex items-center gap-2 transition-all font-medium',
             )}
           >
             <ArrowLeft className="size-4" />
