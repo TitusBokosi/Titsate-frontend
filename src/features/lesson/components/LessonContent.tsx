@@ -50,7 +50,7 @@ const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
           borderRadius: '1rem',
           padding: '1.5rem',
           fontSize: '0.9rem',
-          background: '#1e1e1e', 
+          background: '#1e1e1e',
         }}
       >
         {codeString}
@@ -92,11 +92,13 @@ export function LessonContent({ lesson }: LessonContentProps) {
   };
 
   const videoUrl = lesson.videoUrl?.trim();
-  const isEmbeddableVideo = videoUrl && /(?:youtube\.com\/embed\/|player\.vimeo\.com\/video\/)/.test(videoUrl);
+  const isEmbeddableVideo =
+    videoUrl &&
+    /(?:youtube\.com\/embed\/|player\.vimeo\.com\/video\/)/.test(videoUrl);
 
   return (
-    <article className="prose prose-invert max-w-none">
-      <h2 className="text-3xl md:text-5xl font-black mb-5 leading-tight">
+    <article className="prose prose-invert max-w-none ">
+      <h2 className="text-3xl md:text-5xl font-black  leading-tight">
         {lesson.lessonName}
       </h2>
 
@@ -127,13 +129,13 @@ export function LessonContent({ lesson }: LessonContentProps) {
         </div>
       )}
 
-      <div className="bg-card/40 backdrop-blur-sm border border-white/10 rounded-3xl p-8 md:p-10 mb-10 leading-relaxed relative overflow-hidden">
-        <div className="relative z-10">
+      <div className="bg-card/40 backdrop-blur-sm border border-white/10  md:px-10 mb-5 leading-relaxed relative overflow-hidden">
+        <div className="markdown-body relative z-10">
           {lesson.content ? (
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
-                code: CodeBlock
+                code: CodeBlock,
               }}
             >
               {lesson.content}
@@ -152,15 +154,20 @@ export function LessonContent({ lesson }: LessonContentProps) {
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
             <div>
               <h3 className="text-2xl font-black mb-2 flex items-center gap-3">
-                 Project Submission
+                Project Submission
               </h3>
               <p className="text-white/80 max-w-xl">
-                Ready to show what you've learned? Submit your project URL  below.
+                Ready to show what you've learned? Submit your project URL
+                below.
               </p>
             </div>
             {submission && (
-              <Badge variant="secondary" className="bg-white/20 text-white border-0 py-2 px-4 text-sm font-bold">
-                Submitted on {new Date(submission.createdAt).toLocaleDateString()}
+              <Badge
+                variant="secondary"
+                className="bg-white/20 text-white border-0 py-2 px-4 text-sm font-bold"
+              >
+                Submitted on{' '}
+                {new Date(submission.createdAt).toLocaleDateString()}
               </Badge>
             )}
           </div>
@@ -189,17 +196,18 @@ export function LessonContent({ lesson }: LessonContentProps) {
 
             {submission && (
               <div className="bg-white/10 rounded-2xl p-6 border border-white/20">
-                <p className="text-sm text-white/60 mb-2 font-bold uppercase tracking-wider">Your Submission</p>
-                <a 
-                  href={submission.projectUrl} 
-                  target="_blank" 
+                <p className="text-sm text-white/60 mb-2 font-bold uppercase tracking-wider">
+                  Your Submission
+                </p>
+                <a
+                  href={submission.projectUrl}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="text-white font-medium hover:underline break-all inline-flex items-center gap-2"
                 >
                   {submission.projectUrl}
                   <ExternalLink className="size-4 shrink-0" />
                 </a>
-
               </div>
             )}
           </div>
