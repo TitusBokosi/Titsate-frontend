@@ -45,6 +45,7 @@ export function ContentManagementPage() {
   const [isTopicDialogOpen, setIsTopicDialogOpen] = useState(false);
   const [isLessonDialogOpen, setIsLessonDialogOpen] = useState(false);
   const [lessonTopicId, setLessonTopicId] = useState<string | null>(null);
+  const [editingLesson, setEditingLesson] = useState<any>(null);
 
   const course = courseData?.data;
 
@@ -64,6 +65,64 @@ export function ContentManagementPage() {
 
   const handleCreateLesson = async (topicId: string, data: any) => {
     await createLesson({ topicId, data });
+    refetch();
+  };
+
+  const handleOpenEditLesson = (topicId: string, lesson: any) => {
+    setLessonTopicId(topicId);
+    setEditingLesson(lesson);
+    setIsLessonDialogOpen(true);
+  };
+
+  const handleUpdateLessonComplex = async (topicId: string, lessonId: string, data: any) => {
+    if (!course) return;
+
+    const topic = course.topics?.find((t: any) => t.id === topicId);
+    if (!topic) return;
+
+    const lessons = (topic.lessons || []).slice().map((l: any, i: number) => ({
+      ...l,
+      position: typeof l.position === 'number' ? l.position : i + 1,
+    }));
+
+    const currentIndex = lessons.findIndex((l: any) => l.id === lessonId);
+    if (currentIndex === -1) return;
+
+    let requestedPos: number | null = null;
+    if (data.position !== undefined) {
+      requestedPos = Math.max(1, Math.min(data.position, lessons.length));
+    }
+
+    const isPositionChange = requestedPos !== null && requestedPos !== (currentIndex + 1);
+
+    if (!isPositionChange) {
+      await updateLesson({ topicId, lessonId, data });
+      refetch();
+      return;
+    }
+
+    // Standard reordering logic
+    const moved = lessons.splice(currentIndex, 1)[0];
+    const insertIndex = (requestedPos as number) - 1;
+    lessons.splice(insertIndex, 0, moved);
+
+    const updates: Array<Promise<any>> = [];
+    for (let i = 0; i < lessons.length; i++) {
+        const l = lessons[i];
+        const newPos = i + 1;
+        const payload: any = {};
+        if (l.position !== newPos) payload.position = newPos;
+        if (l.id === lessonId) {
+            // Apply other updates as well
+            Object.assign(payload, data);
+            payload.position = newPos; // override
+        }
+        if (Object.keys(payload).length > 0) {
+            updates.push(updateLesson({ topicId, lessonId: l.id, data: payload }));
+        }
+    }
+
+    await Promise.all(updates);
     refetch();
   };
 
@@ -221,6 +280,7 @@ export function ContentManagementPage() {
         setEditContent={setEditContent}
         onOpenTopicDialog={handleOpenTopicDialog}
         onOpenLessonForm={handleOpenLessonForm}
+        onOpenEditLesson={handleOpenEditLesson}
         deleteTopic={deleteTopic}
         deleteLesson={deleteLesson}
         updateTopic={handleUpdateTopic}
@@ -236,13 +296,21 @@ export function ContentManagementPage() {
       <LessonDialog
         open={isLessonDialogOpen}
         onOpenChange={(open) => {
-          if (!open) setLessonTopicId(null);
+          if (!open) {
+              setLessonTopicId(null);
+              setEditingLesson(null);
+          }
           setIsLessonDialogOpen(open);
         }}
-        initial={undefined}
+        initial={editingLesson}
+        siblingLessons={course?.topics?.find((t: any) => t.id === lessonTopicId)?.lessons || []}
         onSave={async (data) => {
           if (!lessonTopicId) return;
-          await handleCreateLesson(lessonTopicId, data);
+          if (editingLesson) {
+              await handleUpdateLessonComplex(lessonTopicId, editingLesson.id, data);
+          } else {
+              await handleCreateLesson(lessonTopicId, data);
+          }
         }}
       />
     </div>

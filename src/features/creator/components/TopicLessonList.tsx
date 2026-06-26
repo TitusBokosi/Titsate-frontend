@@ -10,6 +10,7 @@ type TopicLessonListProps = {
   setEditingId: (id: string | null) => void;
   onUpdateLesson: (topicId: string, lessonId: string) => Promise<void>;
   onDeleteLesson: (opts: { topicId: string; lessonId: string }) => void;
+  onOpenEditLesson?: (topicId: string, lesson: any) => void;
 };
 
 export default function TopicLessonList({
@@ -22,6 +23,7 @@ export default function TopicLessonList({
   setEditingId,
   onUpdateLesson,
   onDeleteLesson,
+  onOpenEditLesson,
 }: TopicLessonListProps) {
   return (
     <>
@@ -48,6 +50,7 @@ export default function TopicLessonList({
           onDeleteLesson={() =>
             onDeleteLesson({ topicId: topic.id, lessonId: lesson.id })
           }
+          onOpenEditLesson={() => onOpenEditLesson?.(topic.id, lesson)}
         />
       ))}
     </>

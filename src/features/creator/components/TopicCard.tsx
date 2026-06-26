@@ -19,6 +19,7 @@ type TopicProps = {
   editPosition: string;
   setEditPosition: (value: string) => void;
   onOpenLessonForm?: (topicId: string) => void;
+  onOpenEditLesson?: (topicId: string, lesson: any) => void;
 };
 
 export function TopicCard({
@@ -37,6 +38,7 @@ export function TopicCard({
   editPosition,
   setEditPosition,
   onOpenLessonForm,
+  onOpenEditLesson,
 }: TopicProps) {
   return (
     <Card className="border-none shadow-md ring-1 ring-white/5 bg-card/40 backdrop-blur-sm overflow-hidden">
@@ -73,6 +75,7 @@ export function TopicCard({
             setEditingId={setEditingId}
             onUpdateLesson={onUpdateLesson}
             onDeleteLesson={onDeleteLesson}
+            onOpenEditLesson={onOpenEditLesson}
           />
           <TopicCardFooter
             topicId={topic.id}

@@ -70,7 +70,7 @@ export const useContentManagementActions = (courseId: string) => {
     mutationFn: (topicId: string) => creatorApi.deleteTopic(courseId, topicId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses', courseId] })
-      toast.success('Topic deletion requested')
+      toast.success('Topic deleted')
     },
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed to delete topic')
   })
@@ -100,7 +100,7 @@ export const useContentManagementActions = (courseId: string) => {
       creatorApi.deleteLesson(courseId, topicId, lessonId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['courses', courseId] })
-      toast.success('Lesson deletion requested')
+      toast.success('Lesson deleted')
     },
     onError: (err: any) => toast.error(err.response?.data?.message || 'Failed to delete lesson')
   })

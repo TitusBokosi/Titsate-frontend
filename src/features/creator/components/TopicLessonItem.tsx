@@ -1,7 +1,15 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { FileText, Video, Edit2, Trash } from 'lucide-react';
+import { FileText, Video, Edit2, Trash, AlertCircle } from 'lucide-react';
 import { LessonEditor } from './LessonEditor';
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 
 type TopicLessonItemProps = {
   lesson: any;
@@ -14,6 +22,7 @@ type TopicLessonItemProps = {
   onCancelLessonEdit: () => void;
   onSaveLesson: () => void;
   onDeleteLesson: () => void;
+  onOpenEditLesson: () => void;
 };
 
 export default function TopicLessonItem({
@@ -27,8 +36,10 @@ export default function TopicLessonItem({
   onCancelLessonEdit,
   onSaveLesson,
   onDeleteLesson,
+  onOpenEditLesson,
 }: TopicLessonItemProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const isEditingLesson = editingId === lesson.id;
   const isVideo = lesson.lessonType === 'VIDEO';
 
@@ -78,7 +89,7 @@ export default function TopicLessonItem({
                 className="opacity-0 group-hover/lesson:opacity-100 transition-opacity h-6 w-6 rounded-full"
                 onClick={(event) => {
                   event.stopPropagation();
-                  onBeginLessonEdit();
+                  onOpenEditLesson();
                 }}
               >
                 <Edit2 className="size-3" />
@@ -90,18 +101,42 @@ export default function TopicLessonItem({
           </p>
         </div>
 
-        <div className="flex gap-1">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="rounded-full opacity-50 hover:opacity-100"
-            onClick={(event) => {
-              event.stopPropagation();
-              onDeleteLesson();
-            }}
-          >
-            <Trash className="size-4 text-red-500" />
-          </Button>
+        <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
+          <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="rounded-full opacity-50 hover:opacity-100"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              <Trash className="size-4 text-red-500" />
+            </Button>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <div className="flex items-center gap-2 text-red-500 mb-2">
+                  <AlertCircle className="size-5" />
+                  <AlertDialogTitle>Delete Lesson?</AlertDialogTitle>
+                </div>
+                <AlertDialogDescription>
+                  This will permanently remove the lesson <strong>{lesson.lessonName}</strong>. This action cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <Button variant="ghost" className="rounded-xl px-4" onClick={() => setIsDeleteDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button 
+                  className="bg-red-500 hover:bg-red-600 text-white rounded-xl px-4"
+                  onClick={() => {
+                    onDeleteLesson();
+                    setIsDeleteDialogOpen(false);
+                  }}
+                >
+                  Confirm Delete
+                </Button>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
 

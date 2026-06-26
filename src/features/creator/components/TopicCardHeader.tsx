@@ -1,8 +1,20 @@
+import React, { useState } from 'react';
 import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { GripVertical, Edit2, Trash, Check } from 'lucide-react';
+import { GripVertical, Edit2, Trash, Check, AlertCircle } from 'lucide-react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 type TopicCardHeaderProps = {
   topic: any;
@@ -32,6 +44,7 @@ export default function TopicCardHeader({
   onCancelEditing,
 }: TopicCardHeaderProps) {
   const isEditingTopic = editingId === topic.id;
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   return (
     <CardHeader className="p-4 flex flex-row items-center gap-4 border-b border-white/5">
@@ -96,14 +109,41 @@ export default function TopicCardHeader({
       </div>
 
       <div className="flex gap-2">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="rounded-full opacity-50 hover:opacity-100"
-          onClick={() => onDeleteTopic(topic.id)}
-        >
-          <Trash className="size-4 text-red-500" />
-        </Button>
+        <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-full opacity-50 hover:opacity-100"
+            onClick={() => setIsDeleteDialogOpen(true)}
+          >
+            <Trash className="size-4 text-red-500" />
+          </Button>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <div className="flex items-center gap-2 text-red-500 mb-2">
+                <AlertCircle className="size-5" />
+                <AlertDialogTitle>Delete Topic?</AlertDialogTitle>
+              </div>
+              <AlertDialogDescription>
+                This will permanently remove <strong>{topic.topicName}</strong> and all its associated lessons. This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <Button variant="ghost" className="rounded-xl px-4" onClick={() => setIsDeleteDialogOpen(false)}>
+                Cancel
+              </Button>
+              <Button 
+                className="bg-red-500 hover:bg-red-600 text-white rounded-xl px-4"
+                onClick={() => {
+                  onDeleteTopic(topic.id);
+                  setIsDeleteDialogOpen(false);
+                }}
+              >
+                Confirm Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </CardHeader>
   );

@@ -14,6 +14,7 @@ export function Curriculum({
   setEditContent,
   onOpenTopicDialog,
   onOpenLessonForm,
+  onOpenEditLesson,
   deleteTopic,
   deleteLesson,
   updateTopic,
@@ -55,6 +56,7 @@ export function Curriculum({
             onDeleteLesson={deleteLesson}
             onUpdateLesson={updateLesson}
             onOpenLessonForm={onOpenLessonForm}
+            onOpenEditLesson={onOpenEditLesson}
           />
         ))}
 
