@@ -2,7 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { useLesson } from '../hooks/useLessons'
 import { useTopics } from '@/features/topic/hooks/useTopics'
 import { useMarkComplete, useMyProgress } from '@/features/progress/hooks/useProgress'
-import { useMyEnrollments } from '@/features/enrollments/hooks/useEnrollments'
+import { useMyEnrollments, useEnrollInCourse } from '@/features/enrollments/hooks/useEnrollments'
 import { useAuthContext } from '@/providers/AuthProvider'
 import { Loader2, Menu, X } from 'lucide-react'
 import { toast } from 'sonner'
@@ -32,6 +32,7 @@ export function LessonDetailPage() {
   const { data: enrollmentRes } = useMyEnrollments({ enabled: isAuthenticated })
   const { data: progressRes } = useMyProgress({ enabled: isAuthenticated })
   const markCompleteMutation = useMarkComplete()
+  const enrollMutation = useEnrollInCourse()
 
   const lesson = lessonRes?.data
   const topics = syllabusRes?.data || []
@@ -59,6 +60,26 @@ export function LessonDetailPage() {
     lessonIndex < lessonsInTopic.length - 1
       ? lessonsInTopic[lessonIndex + 1]
       : null
+
+  const handleEnroll = async () => {
+    if (!isAuthenticated) {
+      toast.info('Please login to enroll in this course')
+      navigate('/login')
+      return
+    }
+
+    try {
+      await enrollMutation.mutateAsync({
+        courseId: courseId!,
+        userId: user?.id,
+      })
+      toast.success('Successfully enrolled in the course!')
+    } catch (err: any) {
+      toast.error(
+        err.response?.data?.message || 'Failed to enroll in the course'
+      )
+    }
+  }
 
   const handleMarkComplete = async () => {
     try {
@@ -156,6 +177,8 @@ export function LessonDetailPage() {
             onMarkComplete={handleMarkComplete}
             isEnrolled={isEnrolled}
             isMarkingPending={markCompleteMutation.isPending}
+            onEnroll={handleEnroll}
+            isEnrolling={enrollMutation.isPending}
           />
 
         </div>

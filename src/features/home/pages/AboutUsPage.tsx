@@ -2,8 +2,28 @@ import { HeroHeader } from '@/components/header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Target, Users, Shield, Zap } from 'lucide-react';
 import MissionVision from '../components/MissionVision';
+import { useAuthContext } from '@/providers/AuthProvider';
+import { useNavigate } from 'react-router-dom';
 
 export default function AboutUsPage() {
+  const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuthContext();
+
+  const handleButtonClick = () => {
+    if (isAuthenticated && user) {
+      let dashboardHref = `/dashboard/${user.id}`;
+      if (user.role === 'ADMIN') {
+        dashboardHref = '/admin';
+      } else if (user.role === 'SUPER_CREATOR' || user.role === 'CREATOR') {
+        dashboardHref = '/creator';
+      }
+      navigate(dashboardHref);
+    } else {
+      navigate('/signup');
+    }
+  };
+
+  const buttonText = isAuthenticated ? 'Go to Dashboard' : 'Join for Free';
   return (
     <div className="min-h-screen bg-background">
       <HeroHeader />
@@ -66,8 +86,11 @@ export default function AboutUsPage() {
                 Join thousands of students and creators who are already building their dreams on Titsate.
               </p>
               <div className="flex flex-wrap justify-center gap-4">
-                <button className="bg-white text-primary font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all active:scale-95">
-                  Join for Free
+                <button 
+                  onClick={handleButtonClick}
+                  className="bg-white text-primary font-bold px-8 py-4 rounded-xl hover:shadow-lg transition-all active:scale-95"
+                >
+                  {buttonText}
                 </button>
               </div>
             </div>

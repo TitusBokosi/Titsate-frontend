@@ -3,12 +3,13 @@ import { Outlet } from 'react-router-dom';
 import { DashboardSidebar } from './DashboardSidebar';
 import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-
+import ScrollToTop from '@/components/scrollTop';
 export function DashboardLayout() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background">
+      <ScrollToTop/>
       {/* Mobile Top Bar */}
       <div className="lg:hidden flex items-center justify-between p-4 border-b bg-card">
         <Button 

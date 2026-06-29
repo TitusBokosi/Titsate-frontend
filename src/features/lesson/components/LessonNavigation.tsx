@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
@@ -12,6 +12,8 @@ interface LessonNavigationProps {
   onMarkComplete: () => void;
   isEnrolled: boolean;
   isMarkingPending: boolean;
+  onEnroll?: () => void;
+  isEnrolling?: boolean;
 }
 
 export function LessonNavigation({ 
@@ -22,7 +24,9 @@ export function LessonNavigation({
   isCompleted, 
   onMarkComplete,
   isEnrolled,
-  isMarkingPending
+  isMarkingPending,
+  onEnroll,
+  isEnrolling
 }: LessonNavigationProps) {
   const navigate = useNavigate();
 
@@ -62,9 +66,11 @@ export function LessonNavigation({
          ) : (
            <Button 
             variant="secondary" 
-            className="h-14 px-10 rounded-md font-bold"
-            onClick={() => navigate(`/courses/${courseId}`)}
+            className="h-14 px-10 rounded-md font-bold flex items-center gap-2"
+            disabled={isEnrolling}
+            onClick={onEnroll}
            >
+             {isEnrolling && <Loader2 className="size-4 animate-spin" />}
              Enroll to Track Progress
            </Button>
          )}
